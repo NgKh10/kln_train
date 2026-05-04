@@ -1,0 +1,90 @@
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+.stations-management {
+  .page-header {
+    @include flex-between;
+    margin-bottom: $spacing-lg;
+    flex-wrap: wrap;
+    gap: $spacing-md;
+  }
+  
+  .filter-bar {
+    background: $white;
+    border-radius: $border-radius-lg;
+    padding: $spacing-md;
+    margin-bottom: $spacing-lg;
+    @include flex-between;
+    flex-wrap: wrap;
+    gap: $spacing-md;
+    
+    .search-input {
+      position: relative;
+      
+      input {
+        padding-left: 36px;
+        width: 300px;
+        
+        @include mobile {
+          width: 100%;
+        }
+      }
+      
+      svg {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: $gray;
+      }
+    }
+    
+    .stats-info {
+      color: $gray;
+      font-size: 14px;
+    }
+  }
+  
+  .station-form {
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: $spacing-md;
+      margin-bottom: $spacing-md;
+      
+      @include mobile {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .form-group {
+      margin-bottom: $spacing-md;
+      
+      label {
+        display: block;
+        margin-bottom: $spacing-xs;
+        font-weight: 500;
+        color: $dark;
+      }
+      
+      input, select {
+        width: 100%;
+        padding: $spacing-sm $spacing-md;
+        border: 1px solid $light;
+        border-radius: $border-radius-md;
+        
+        &:focus {
+          outline: none;
+          border-color: $primary;
+        }
+      }
+    }
+    
+    .form-actions {
+      @include flex(row, flex-end, center, $spacing-md);
+      margin-top: $spacing-lg;
+      padding-top: $spacing-md;
+      border-top: 1px solid $light;
+    }
+  }
+}

@@ -1,0 +1,125 @@
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+.trains-management {
+  .page-header {
+    @include flex-between;
+    margin-bottom: $spacing-lg;
+    flex-wrap: wrap;
+    gap: $spacing-md;
+  }
+  
+  .train-form {
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: $spacing-md;
+      margin-bottom: $spacing-md;
+      
+      @include mobile {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .form-group {
+      margin-bottom: $spacing-md;
+      
+      label {
+        display: block;
+        margin-bottom: $spacing-xs;
+        font-weight: 500;
+        color: $dark;
+      }
+      
+      input, select {
+        width: 100%;
+        padding: $spacing-sm $spacing-md;
+        border: 1px solid $light;
+        border-radius: $border-radius-md;
+        
+        &:focus {
+          outline: none;
+          border-color: $primary;
+        }
+      }
+    }
+    
+    .toa-config {
+      border: 1px solid $light;
+      border-radius: $border-radius-md;
+      padding: $spacing-md;
+      margin-bottom: $spacing-md;
+      max-height: 300px;
+      overflow-y: auto;
+      
+      .toa-item {
+        @include flex-between;
+        padding: $spacing-sm;
+        border-bottom: 1px solid $light;
+        
+        select {
+          width: 200px;
+        }
+      }
+    }
+    
+    .btn-add-toa {
+      @include button($secondary);
+      width: 100%;
+    }
+    
+    .form-actions {
+      @include flex(row, flex-end, center, $spacing-md);
+      margin-top: $spacing-lg;
+      padding-top: $spacing-md;
+      border-top: 1px solid $light;
+    }
+  }
+  
+  .train-detail {
+    .detail-section {
+      margin-bottom: $spacing-lg;
+      
+      h4 {
+        font-size: 16px;
+        color: $dark;
+        margin-bottom: $spacing-md;
+        padding-bottom: $spacing-sm;
+        border-bottom: 2px solid $primary;
+        display: inline-block;
+      }
+      
+      .detail-row {
+        @include flex(row, flex-start, center, $spacing-md);
+        padding: $spacing-sm 0;
+        
+        .label {
+          width: 100px;
+          font-weight: 500;
+          color: $gray;
+        }
+        
+        .value {
+          flex: 1;
+          color: $dark;
+        }
+      }
+    }
+    
+    .toa-table {
+      width: 100%;
+      border-collapse: collapse;
+      
+      th, td {
+        padding: $spacing-sm;
+        text-align: left;
+        border-bottom: 1px solid $light;
+      }
+      
+      th {
+        background: #f8f9fa;
+        font-weight: 500;
+      }
+    }
+  }
+}

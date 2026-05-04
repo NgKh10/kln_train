@@ -1,0 +1,99 @@
+@use '../../styles/variables' as *;
+
+.coupons-page {
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  
+  .filter-bar {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    
+    .search-input {
+      position: relative;
+      
+      input {
+        padding-left: 36px;
+        width: 300px;
+      }
+      
+      svg {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: $gray;
+      }
+    }
+    
+    .stats-info {
+      color: $gray;
+      font-size: 13px;
+    }
+  }
+  
+  .coupon-form {
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+      
+      @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .form-group {
+      margin-bottom: 16px;
+      
+      label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 500;
+        color: $dark;
+      }
+      
+      input, select, textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid $light;
+        border-radius: 8px;
+        font-size: 14px;
+        
+        &:focus {
+          outline: none;
+          border-color: $primary;
+        }
+      }
+    }
+    
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid $light;
+    }
+  }
+  
+  .badge {
+    &.badge-success { background: rgba($success, 0.1); color: $success; }
+    &.badge-warning { background: rgba($warning, 0.1); color: $warning; }
+    &.badge-danger { background: rgba($danger, 0.1); color: $danger; }
+    &.badge-secondary { background: rgba($gray, 0.1); color: $gray; }
+  }
+}
