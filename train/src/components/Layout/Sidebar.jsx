@@ -23,7 +23,7 @@ const Sidebar = ({ collapsed, toggleCollapse, mobileOpen }) => {
     <div className={`sideBar grid ${collapsed ? 'collapsed' : ''} ${mobileOpen ? 'mobile-open' : ''}`}>
       <div className="logoDiv flex">
         <img src={logo} alt="logo"/>
-        <h2>Trainti.</h2>
+        <h2>KLN Train</h2>
         {!collapsed && (
           <button className="collapse-btn" onClick={toggleCollapse}>
             ←

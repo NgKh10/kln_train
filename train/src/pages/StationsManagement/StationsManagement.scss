@@ -1,34 +1,40 @@
 @import '../../styles/variables';
-@import '../../styles/mixins';
 
 .stations-management {
   .page-header {
-    @include flex-between;
-    margin-bottom: $spacing-lg;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
     flex-wrap: wrap;
-    gap: $spacing-md;
+    gap: 16px;
+    
+    .page-title {
+      font-size: 24px;
+      color: $dark;
+      margin-bottom: 4px;
+    }
+    
+    .page-subtitle {
+      color: $gray;
+      font-size: 14px;
+    }
   }
   
+  // Filter bar
   .filter-bar {
-    background: $white;
-    border-radius: $border-radius-lg;
-    padding: $spacing-md;
-    margin-bottom: $spacing-lg;
-    @include flex-between;
-    flex-wrap: wrap;
-    gap: $spacing-md;
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 16px;
+    box-shadow: $shadow-sm;
     
     .search-input {
       position: relative;
-      
-      input {
-        padding-left: 36px;
-        width: 300px;
-        
-        @include mobile {
-          width: 100%;
-        }
-      }
+      flex: 1;
+      max-width: 350px;
       
       svg {
         position: absolute;
@@ -37,41 +43,13 @@
         transform: translateY(-50%);
         color: $gray;
       }
-    }
-    
-    .stats-info {
-      color: $gray;
-      font-size: 14px;
-    }
-  }
-  
-  .station-form {
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: $spacing-md;
-      margin-bottom: $spacing-md;
       
-      @include mobile {
-        grid-template-columns: 1fr;
-      }
-    }
-    
-    .form-group {
-      margin-bottom: $spacing-md;
-      
-      label {
-        display: block;
-        margin-bottom: $spacing-xs;
-        font-weight: 500;
-        color: $dark;
-      }
-      
-      input, select {
+      input {
         width: 100%;
-        padding: $spacing-sm $spacing-md;
+        padding: 10px 12px 10px 36px;
         border: 1px solid $light;
-        border-radius: $border-radius-md;
+        border-radius: 8px;
+        font-size: 14px;
         
         &:focus {
           outline: none;
@@ -79,12 +57,144 @@
         }
       }
     }
+  }
+  
+  // Button styles
+  .btn-primary {
+    background: $primary;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+    
+    &:hover {
+      background: $primary-dark;
+      transform: translateY(-1px);
+    }
+  }
+  
+  .btn-secondary {
+    background: $gray;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+    
+    &:hover {
+      background: darken($gray, 10%);
+    }
+  }
+  
+  // Form styles
+  form {
+    .form-group {
+      margin-bottom: 16px;
+      
+      label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 500;
+        color: $dark;
+        font-size: 14px;
+      }
+      
+      input, select {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid $light;
+        border-radius: 8px;
+        font-size: 14px;
+        
+        &:focus {
+          outline: none;
+          border-color: $primary;
+          box-shadow: 0 0 0 2px rgba($primary, 0.1);
+        }
+      }
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      
+      @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+      }
+    }
     
     .form-actions {
-      @include flex(row, flex-end, center, $spacing-md);
-      margin-top: $spacing-lg;
-      padding-top: $spacing-md;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 20px;
+      padding-top: 16px;
       border-top: 1px solid $light;
+    }
+  }
+  
+  // Action buttons
+  .action-buttons {
+    display: flex;
+    gap: 8px;
+    
+    button {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      
+      &.btn-view {
+        background: rgba($info, 0.1);
+        color: $info;
+        &:hover { background: $info; color: white; }
+      }
+      
+      &.btn-edit {
+        background: rgba($warning, 0.1);
+        color: $warning;
+        &:hover { background: $warning; color: white; }
+      }
+      
+      &.btn-delete {
+        background: rgba($danger, 0.1);
+        color: $danger;
+        &:hover { background: $danger; color: white; }
+      }
+    }
+  }
+  
+  // Badge
+  .badge {
+    display: inline-flex;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    
+    &.badge-success {
+      background: rgba($success, 0.1);
+      color: $success;
+    }
+    
+    &.badge-danger {
+      background: rgba($danger, 0.1);
+      color: $danger;
     }
   }
 }

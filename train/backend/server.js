@@ -1,176 +1,258 @@
 const express = require('express');
 const cors = require('cors');
+const dotenv = require('dotenv');
+const { executeQuery, testConnection } = require('./config/db');
+
+dotenv.config();
 
 const app = express();
-app.use(cors());
+
+// CORS
+// Thêm middleware CORS trước các route
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://localhost:3001'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
+// TEST ROUTE TRỰC TIẾP - KHÔNG QUA FILE ROUTE
+app.get('/api/schedules-direct', (req, res) => {
+  console.log('✅ Direct route called!');
+  res.json({ success: true, message: 'Direct route works!', data: [] });
+});
 
-// ==================== MOCK DATA ====================
-// Tài khoản đăng nhập
-const users = [
-  { id: 1, email: 'admin@vnr.com.vn', password: 'admin', name: 'Quản trị viên KLN', role: 'admin' },
-  { id: 2, email: 'dichvu@vnr.com.vn', password: '123', name: 'Nhân viên DV', role: 'staff' }
-];
+// Import routes
+const authRoutes = require('./routes/auth.routes');
+const dashboardRoutes = require('./routes/dashboard.routes');
+const trainRoutes = require('./routes/train.routes');
+const stationRoutes = require('./routes/station.routes');
+const ticketRoutes = require('./routes/ticket.routes');
+const scheduleRoutes = require('./routes/schedule.routes'); 
+const customerRoutes = require('./routes/customer.routes');
 
-// Thống kê Dashboard
-const dashboardStats = {
-  total_revenue: 12568000000,
-  total_tickets: 28450,
-  total_customers: 45680,
-  total_trains: 156,
-  avg_occupancy: 78
-};
+// Sử dụng routes
+app.use('/api/auth', authRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/trains', trainRoutes);
+app.use('/api/stations', stationRoutes);
+app.use('/api/tickets', ticketRoutes);
+app.use('/api/customers', customerRoutes);
+app.use('/api/schedules', scheduleRoutes);
 
-// Doanh thu theo tháng
-const revenueByMonth = [
-  { month: 'Thg 1', revenue: 1250000000, tickets: 2850 },
-  { month: 'Thg 2', revenue: 980000000, tickets: 2230 },
-  { month: 'Thg 3', revenue: 1420000000, tickets: 3240 },
-  { month: 'Thg 4', revenue: 1350000000, tickets: 3080 },
-  { month: 'Thg 5', revenue: 1580000000, tickets: 3610 },
-  { month: 'Thg 6', revenue: 1650000000, tickets: 3780 },
-  { month: 'Thg 7', revenue: 1720000000, tickets: 3950 },
-  { month: 'Thg 8', revenue: 1680000000, tickets: 3850 },
-  { month: 'Thg 9', revenue: 1550000000, tickets: 3540 },
-  { month: 'Thg 10', revenue: 1820000000, tickets: 4160 },
-  { month: 'Thg 11', revenue: 1950000000, tickets: 4450 },
-  { month: 'Thg 12', revenue: 2100000000, tickets: 4800 }
-];
-
-// Doanh thu theo tuần
-const revenueByWeek = [
-  { day: 'T2', revenue: 420000000, tickets: 960 },
-  { day: 'T3', revenue: 380000000, tickets: 870 },
-  { day: 'T4', revenue: 450000000, tickets: 1030 },
-  { day: 'T5', revenue: 430000000, tickets: 985 },
-  { day: 'T6', revenue: 560000000, tickets: 1280 },
-  { day: 'T7', revenue: 720000000, tickets: 1650 },
-  { day: 'CN', revenue: 680000000, tickets: 1550 }
-];
-
-// Tuyến phổ biến
-const popularRoutes = [
-  { from_station: 'Hà Nội', to_station: 'Sài Gòn', total_tickets: 12450, total_revenue: 18675000000 },
-  { from_station: 'Hà Nội', to_station: 'Đà Nẵng', total_tickets: 8900, total_revenue: 8010000000 },
-  { from_station: 'Sài Gòn', to_station: 'Nha Trang', total_tickets: 6700, total_revenue: 4556000000 },
-  { from_station: 'Đà Nẵng', to_station: 'Sài Gòn', total_tickets: 5400, total_revenue: 5400000000 },
-  { from_station: 'Hà Nội', to_station: 'Hải Phòng', total_tickets: 4800, total_revenue: 1440000000 }
-];
-
-// Đơn hàng gần đây
-const recentOrders = [
-  { id: 'ORD001', customer: 'Nguyễn Văn A', train: 'SE1', from_station: 'Hà Nội', to_station: 'Sài Gòn', date: '2024-01-15', amount: 1250000, status: 'completed' },
-  { id: 'ORD002', customer: 'Trần Thị B', train: 'SE2', from_station: 'Đà Nẵng', to_station: 'Hà Nội', date: '2024-01-15', amount: 890000, status: 'completed' },
-  { id: 'ORD003', customer: 'Lê Văn C', train: 'TN1', from_station: 'Hải Phòng', to_station: 'Vinh', date: '2024-01-14', amount: 450000, status: 'pending' },
-  { id: 'ORD004', customer: 'Phạm Thị D', train: 'SE3', from_station: 'Sài Gòn', to_station: 'Nha Trang', date: '2024-01-14', amount: 680000, status: 'cancelled' }
-];
-
-// Lịch chạy sắp tới
-const upcomingTrains = [
-  { id: 'SE1', from_station: 'Hà Nội', to_station: 'Sài Gòn', departure: '08:00', status: 'on-time' },
-  { id: 'SE2', from_station: 'Sài Gòn', to_station: 'Hà Nội', departure: '09:30', status: 'on-time' },
-  { id: 'TN1', from_station: 'Lào Cai', to_station: 'Hà Nội', departure: '10:15', status: 'delayed' },
-  { id: 'SE3', from_station: 'Đà Nẵng', to_station: 'Sài Gòn', departure: '11:00', status: 'on-time' }
-];
-
-// Top ga
-const topStations = [
-  { name: 'Ga Hà Nội', traffic: 12500, percentage: 28 },
-  { name: 'Ga Sài Gòn', traffic: 11800, percentage: 26 },
-  { name: 'Ga Đà Nẵng', traffic: 8500, percentage: 19 },
-  { name: 'Ga Nha Trang', traffic: 6200, percentage: 14 },
-  { name: 'Ga Hải Phòng', traffic: 5800, percentage: 13 }
-];
-
-// Phân bố khách hàng
-const customerDistribution = [
-  { name: 'Người lớn', value: 65, color: '#8C1D19' },
-  { name: 'Sinh viên', value: 20, color: '#e67e22' },
-  { name: 'Trẻ em', value: 10, color: '#27ae60' },
-  { name: 'Người cao tuổi', value: 5, color: '#3498db' }
-];
-
-// Coupon
-const coupons = [
-  { ma_km: 'WELCOME10', mo_ta: 'Giảm 10% cho đơn đầu', loai_giam: 'percent', gia_tri: 10, so_luong: 100, da_dung: 45, ngay_bat_dau: '2024-01-01', ngay_het_han: '2024-12-31' },
-  { ma_km: 'SUMMER50', mo_ta: 'Giảm 50k', loai_giam: 'fixed', gia_tri: 50000, so_luong: 50, da_dung: 30, ngay_bat_dau: '2024-06-01', ngay_het_han: '2024-08-31' }
-];
-
-// ==================== API ====================
-// Đăng nhập
-app.post('/api/auth/login', (req, res) => {
+// API ĐĂNG NHẬP - DÙNG DATABASE THẬT 
+app.post('/api/auth/login', async (req, res) => {
   const { email, password } = req.body;
-  const user = users.find(u => u.email === email && u.password === password);
   
-  if (user) {
-    const token = Buffer.from(`${user.id}:${Date.now()}`).toString('base64');
+  console.log('🔐 Login attempt:', email);
+  
+  if (!email || !password) {
+    return res.status(400).json({ 
+      success: false, 
+      message: 'Vui lòng nhập email và mật khẩu' 
+    });
+  }
+  
+  try {
+    // Truy vấn database thật
+    const result = await executeQuery(
+      `SELECT ma_tai_khoan, email, mat_khau, ho_ten, vai_tro, trang_thai 
+       FROM TaiKhoan 
+       WHERE email = @email`,
+      { email }
+    );
+    
+    console.log('📊 Query result:', result.recordset.length);
+    
+    if (result.recordset.length === 0) {
+      return res.status(401).json({ 
+        success: false, 
+        message: 'Email hoặc mật khẩu không đúng' 
+      });
+    }
+    
+    const user = result.recordset[0];
+    
+    // Kiểm tra mật khẩu
+    if (password !== user.mat_khau) {
+      console.log('❌ Sai mật khẩu');
+      return res.status(401).json({ 
+        success: false, 
+        message: 'Email hoặc mật khẩu không đúng' 
+      });
+    }
+    
+    // Kiểm tra tài khoản bị khóa
+    if (!user.trang_thai) {
+      return res.status(401).json({ 
+        success: false, 
+        message: 'Tài khoản đã bị khóa' 
+      });
+    }
+    
+    // Kiểm tra quyền (chỉ cho quan_tri hoặc nhan_vien)
+    if (user.vai_tro !== 'quan_tri' && user.vai_tro !== 'nhan_vien') {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Bạn không có quyền truy cập hệ thống quản trị' 
+      });
+    }
+    
+    console.log('✅ Đăng nhập thành công:', user.ho_ten);
+    
     res.json({
       success: true,
-      token,
-      user: { id: user.id, email: user.email, name: user.name, role: user.role }
+      user: {
+        id: user.ma_tai_khoan,
+        email: user.email,
+        name: user.ho_ten,
+        role: user.vai_tro === 'quan_tri' ? 'admin' : 'staff'
+      }
     });
-  } else {
-    res.status(401).json({ success: false, message: 'Email hoặc mật khẩu không đúng' });
+    
+  } catch (error) {
+    console.error('❌ Lỗi đăng nhập:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Lỗi server, vui lòng thử lại sau' 
+    });
   }
 });
 
-// Dashboard stats
-app.get('/api/dashboard/stats', (req, res) => {
-  res.json({ success: true, data: dashboardStats });
+// ==================== API DASHBOARD STATS ====================
+app.get('/api/dashboard/stats', async (req, res) => {
+  try {
+    // Tổng doanh thu từ database
+    const revenueResult = await executeQuery(`
+      SELECT ISNULL(SUM(tong_tien), 0) as total_revenue 
+      FROM DonDatVe 
+      WHERE trang_thai = 'da_thanh_toan'
+    `);
+    
+    // Tổng vé đã bán
+    const ticketResult = await executeQuery(`
+      SELECT COUNT(*) as total_tickets FROM Ve
+    `);
+    
+    // schedule
+  const scheduleRoutes = require('./routes/schedule.routes');
+  app.use('/api/schedules', scheduleRoutes);
+
+    // Tổng khách hàng
+    const customerResult = await executeQuery(`
+      SELECT COUNT(*) as total_customers 
+      FROM TaiKhoan WHERE vai_tro = 'hanh_khach'
+    `);
+    
+    res.json({
+      success: true,
+      data: {
+        total_revenue: revenueResult.recordset[0]?.total_revenue || 0,
+        total_tickets: ticketResult.recordset[0]?.total_tickets || 0,
+        total_customers: customerResult.recordset[0]?.total_customers || 0
+      }
+    });
+  } catch (error) {
+    console.error('Lỗi dashboard stats:', error);
+    res.status(500).json({ success: false, message: 'Lỗi lấy thống kê' });
+  }
 });
 
-// Doanh thu theo tháng
-app.get('/api/dashboard/revenue-by-month', (req, res) => {
-  res.json({ success: true, data: revenueByMonth });
+// ==================== API DOANH THU THEO THÁNG ====================
+app.get('/api/dashboard/revenue-by-month', async (req, res) => {
+  try {
+    const result = await executeQuery(`
+      SELECT 
+        MONTH(ngay_xuat_ve) as month,
+        SUM(gia_ve) as revenue,
+        COUNT(*) as tickets
+      FROM Ve v
+      JOIN DonDatVe d ON v.ma_don = d.ma_don
+      WHERE d.trang_thai = 'da_thanh_toan'
+        AND ngay_xuat_ve >= DATEADD(month, -12, GETDATE())
+      GROUP BY MONTH(ngay_xuat_ve)
+      ORDER BY month ASC
+    `);
+    
+    const months = ['Thg 1', 'Thg 2', 'Thg 3', 'Thg 4', 'Thg 5', 'Thg 6', 
+                    'Thg 7', 'Thg 8', 'Thg 9', 'Thg 10', 'Thg 11', 'Thg 12'];
+    
+    const chartData = [];
+    for (let i = 1; i <= 12; i++) {
+      const found = result.recordset.find(r => r.month === i);
+      chartData.push({
+        month: months[i - 1],
+        revenue: found ? found.revenue : 0,
+        tickets: found ? found.tickets : 0
+      });
+    }
+    
+    res.json({ success: true, data: chartData });
+  } catch (error) {
+    console.error('Lỗi revenue by month:', error);
+    res.status(500).json({ success: false, message: 'Lỗi lấy doanh thu' });
+  }
 });
 
-// Doanh thu theo tuần
-app.get('/api/dashboard/revenue-by-week', (req, res) => {
-  res.json({ success: true, data: revenueByWeek });
+// ==================== API ĐƠN HÀNG GẦN ĐÂY ====================
+app.get('/api/dashboard/recent-orders', async (req, res) => {
+  try {
+    const result = await executeQuery(`
+      SELECT TOP 10
+        d.ma_don as id,
+        tk.ho_ten as customer,
+        t.so_hieu as train,
+        g1.ten_ga as from_station,
+        g2.ten_ga as to_station,
+        FORMAT(d.thoi_gian_dat, 'yyyy-MM-dd') as date,
+        d.tong_tien as amount,
+        d.trang_thai as status
+      FROM DonDatVe d
+      JOIN TaiKhoan tk ON d.ma_tai_khoan = tk.ma_tai_khoan
+      LEFT JOIN Ve v ON d.ma_don = v.ma_don
+      LEFT JOIN ChuyenTau ct ON v.ma_chuyen = ct.ma_chuyen
+      LEFT JOIN LichChay lc ON ct.ma_lich_chay = lc.ma_lich_chay
+      LEFT JOIN Tau t ON lc.ma_tau = t.ma_tau
+      LEFT JOIN GaTau g1 ON v.ma_ga_len = g1.ma_ga
+      LEFT JOIN GaTau g2 ON v.ma_ga_xuong = g2.ma_ga
+      ORDER BY d.thoi_gian_dat DESC
+    `);
+    
+    res.json({ success: true, data: result.recordset });
+  } catch (error) {
+    console.error('Lỗi recent orders:', error);
+    res.status(500).json({ success: false, message: 'Lỗi lấy đơn hàng' });
+  }
 });
 
-// Tuyến phổ biến
-app.get('/api/dashboard/popular-routes', (req, res) => {
-  res.json({ success: true, data: popularRoutes });
-});
-
-// Đơn hàng gần đây
-app.get('/api/dashboard/recent-orders', (req, res) => {
-  res.json({ success: true, data: recentOrders });
-});
-
-// Lịch chạy sắp tới
-app.get('/api/dashboard/upcoming-trains', (req, res) => {
-  res.json({ success: true, data: upcomingTrains });
-});
-
-// Top ga
-app.get('/api/dashboard/top-stations', (req, res) => {
-  res.json({ success: true, data: topStations });
-});
-
-// Phân bố khách hàng
-app.get('/api/dashboard/customer-distribution', (req, res) => {
-  res.json({ success: true, data: customerDistribution });
-});
-
-// Coupons
-app.get('/api/coupons', (req, res) => {
-  res.json({ success: true, data: coupons });
-});
-
-// Health check
+// ==================== HEALTH CHECK ====================
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', message: 'Server is running with Mock Data' });
+  res.json({ status: 'OK', message: 'Server is running with REAL DATABASE' });
 });
 
-const PORT = 5000;
-app.listen(PORT, () => {
-  console.log(`\n🚀 Server running on http://localhost:${PORT}`);
-  console.log(`\n📌 Tài khoản đăng nhập:`);
-  console.log(`   - Email: admin@vnr.com.vn`);
-  console.log(`   - Mật khẩu: admin`);
-  console.log(`\n   - Email: dichvu@vnr.com.vn`);
-  console.log(`   - Mật khẩu: 123`);
-  console.log(`\n✅ Đang chạy với MOCK DATA (không cần database)`);
-});
+// ==================== KHỞI ĐỘNG SERVER ====================
+const PORT = process.env.PORT || 5000;
+
+async function startServer() {
+  console.log('\n🚀 Đang khởi động server...\n');
+  
+  // Kiểm tra kết nối database
+  const dbConnected = await testConnection();
+  
+  if (!dbConnected) {
+    console.log('⚠️ Không thể kết nối database, server vẫn chạy nhưng API database sẽ lỗi');
+  }
+  
+  app.listen(PORT, () => {
+    console.log(`\n🚀 Server running on http://localhost:${PORT}`);
+    console.log(`\n📌 API Endpoints:`);
+    console.log(`   POST http://localhost:${PORT}/api/auth/login`);
+    console.log(`   GET  http://localhost:${PORT}/api/dashboard/stats`);
+    console.log(`   GET  http://localhost:${PORT}/api/coupons`);
+    console.log(`   POST http://localhost:${PORT}/api/coupons`);
+    console.log(`   GET  http://localhost:${PORT}/api/health`);
+  });
+}
+
+startServer();

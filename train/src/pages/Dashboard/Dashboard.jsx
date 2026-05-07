@@ -10,10 +10,12 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
 } from 'recharts';
 import { dashboardAPI } from '../../services/api';
+import StatCard from '../../components/Common/StatCard';
 import LoadingSpinner from '../../components/Common/LoadingSpinner';
 import './Dashboard.scss';
 
 const Dashboard = () => {
+  // ==================== KHỞI TẠO STATE ====================
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     total_revenue: 0,
@@ -22,15 +24,14 @@ const Dashboard = () => {
     total_trains: 0,
     avg_occupancy: 0
   });
-  const [monthlyData, setMonthlyData] = useState([]);
-  const [weeklyData, setWeeklyData] = useState([]);
-  const [popularRoutes, setPopularRoutes] = useState([]);
-  const [recentOrders, setRecentOrders] = useState([]);
-  const [upcomingTrains, setUpcomingTrains] = useState([]);
-  const [topStations, setTopStations] = useState([]);
-  const [customerDistribution, setCustomerDistribution] = useState([]);
+  const [monthlyData, setMonthlyData] = useState([]);        // ← KHỞI TẠO MẢNG RỖNG
+  const [weeklyData, setWeeklyData] = useState([]);          // ← KHỞI TẠO MẢNG RỖNG
+  const [popularRoutes, setPopularRoutes] = useState([]);    // ← KHỞI TẠO MẢNG RỖNG
+  const [recentOrders, setRecentOrders] = useState([]);      // ← KHỞI TẠO MẢNG RỖNG
+  const [upcomingTrains, setUpcomingTrains] = useState([]);  // ← KHỞI TẠO MẢNG RỖNG
+  const [topStations, setTopStations] = useState([]);        // ← KHỞI TẠO MẢNG RỖNG
+  const [customerDistribution, setCustomerDistribution] = useState([]); // ← KHỞI TẠO MẢNG RỖNG
 
-  // Load tất cả dữ liệu
   useEffect(() => {
     loadDashboardData();
   }, []);
@@ -38,16 +39,8 @@ const Dashboard = () => {
   const loadDashboardData = async () => {
     setLoading(true);
     try {
-      const [
-        statsRes,
-        monthlyRes,
-        weeklyRes,
-        routesRes,
-        ordersRes,
-        trainsRes,
-        stationsRes,
-        distributionRes
-      ] = await Promise.all([
+      // Gọi API song song
+      const [statsRes, monthlyRes, weeklyRes, routesRes, ordersRes, trainsRes, stationsRes, distributionRes] = await Promise.all([
         dashboardAPI.getStats(),
         dashboardAPI.getRevenueByMonth(),
         dashboardAPI.getRevenueByWeek(),
@@ -66,69 +59,25 @@ const Dashboard = () => {
       setUpcomingTrains(trainsRes.data.data || []);
       setTopStations(stationsRes.data.data || []);
       setCustomerDistribution(distributionRes.data.data || []);
+      
     } catch (error) {
-      console.error('Lỗi tải dữ liệu dashboard:', error);
-      // Dùng mock data nếu API chưa có
-      setMockData();
+      console.error('Lỗi tải dashboard:', error);
+      // Dùng mock data nếu lỗi
+      setStats({
+        total_revenue: 12568000000,
+        total_tickets: 28450,
+        total_customers: 45680
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  // Mock data tạm thời API chưa có dữ liệu
-  const setMockData = () => {
-    setStats({
-      total_revenue: 12568000000,
-      total_tickets: 28450,
-      total_customers: 45680,
-      total_trains: 156,
-      avg_occupancy: 78
-    });
-    setMonthlyData([
-      { month: 'Thg 1', revenue: 1250000000, tickets: 2850 },
-      { month: 'Thg 2', revenue: 980000000, tickets: 2230 },
-      { month: 'Thg 3', revenue: 1420000000, tickets: 3240 },
-      { month: 'Thg 4', revenue: 1350000000, tickets: 3080 },
-      { month: 'Thg 5', revenue: 1580000000, tickets: 3610 },
-      { month: 'Thg 6', revenue: 1650000000, tickets: 3780 }
-    ]);
-    setWeeklyData([
-      { day: 'T2', revenue: 420000000, tickets: 960 },
-      { day: 'T3', revenue: 380000000, tickets: 870 },
-      { day: 'T4', revenue: 450000000, tickets: 1030 },
-      { day: 'T5', revenue: 430000000, tickets: 985 },
-      { day: 'T6', revenue: 560000000, tickets: 1280 },
-      { day: 'T7', revenue: 720000000, tickets: 1650 },
-      { day: 'CN', revenue: 680000000, tickets: 1550 }
-    ]);
-    setPopularRoutes([
-      { from_station: 'Hà Nội', to_station: 'Sài Gòn', total_tickets: 12450, total_revenue: 18675000000 },
-      { from_station: 'Hà Nội', to_station: 'Đà Nẵng', total_tickets: 8900, total_revenue: 8010000000 },
-      { from_station: 'Sài Gòn', to_station: 'Nha Trang', total_tickets: 6700, total_revenue: 4556000000 }
-    ]);
-    setRecentOrders([
-      { id: 'ORD001', customer: 'Nguyễn Văn A', train: 'SE1', from_station: 'Hà Nội', to_station: 'Sài Gòn', date: '2026-01-15', amount: 1250000, status: 'completed' },
-      { id: 'ORD002', customer: 'Trần Thị B', train: 'SE2', from_station: 'Đà Nẵng', to_station: 'Hà Nội', date: '2026-01-15', amount: 890000, status: 'completed' }
-    ]);
-    setUpcomingTrains([
-      { id: 'SE1', from_station: 'Hà Nội', to_station: 'Sài Gòn', departure: '08:00', status: 'on-time' },
-      { id: 'SE2', from_station: 'Sài Gòn', to_station: 'Hà Nội', departure: '09:30', status: 'on-time' }
-    ]);
-    setTopStations([
-      { name: 'Ga Hà Nội', traffic: 12500, percentage: 28 },
-      { name: 'Ga Sài Gòn', traffic: 11800, percentage: 26 }
-    ]);
-    setCustomerDistribution([
-      { name: 'Người lớn', value: 65, color: '#8C1D19' },
-      { name: 'Sinh viên', value: 20, color: '#e67e22' }
-    ]);
-  };
-
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
   };
-
-  const formatCompactCurrency = (amount) => {
+  
+   const formatCompactCurrency = (amount) => {
     if (amount >= 1000000000) {
       return (amount / 1000000000).toFixed(1) + ' tỷ';
     }
@@ -149,28 +98,7 @@ const Dashboard = () => {
     return badges[status] || badges.completed;
   };
 
-  const StatCard = ({ title, value, icon, growth, color }) => (
-    <div className="stat-card">
-      <div className="stat-header">
-        <div className={`stat-icon ${color}`}>{icon}</div>
-        <div className="stat-info">
-          <h4>{title}</h4>
-          <div className="stat-value">{value}</div>
-          {growth !== undefined && (
-            <div className="stat-growth">
-              <FiTrendingUp className="growth-icon" />
-              <span className={growth >= 0 ? 'positive' : 'negative'}>
-                {growth >= 0 ? `+${growth}%` : `${growth}%`}
-              </span>
-              <span className="growth-text">so với kỳ trước</span>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-
-  const CustomTooltip = ({ active, payload, label }) => {
+   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
         <div className="custom-tooltip">

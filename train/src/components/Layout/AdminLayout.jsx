@@ -1,3 +1,4 @@
+// src/components/Layout/AdminLayout.jsx
 import React, { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
@@ -31,13 +32,14 @@ const AdminLayout = () => {
 
   return (
     <div className="admin-layout">
-      <Sidebar 
-        collapsed={sidebarCollapsed} 
-        toggleCollapse={toggleSidebar}
-        mobileOpen={mobileOpen}
-      />
-      <div className={`main-wrapper ${sidebarCollapsed ? 'expanded' : ''} ${mobileOpen ? 'mobile-shifted' : ''}`}>
-        <Header toggleSidebar={toggleSidebar} collapsed={sidebarCollapsed} />
+      {/* Sidebar */}
+      <div className={`sidebar-wrapper ${mobileOpen ? 'open' : ''}`}>
+        <Sidebar collapsed={sidebarCollapsed} toggleCollapse={toggleSidebar} isMobile={isMobile} />
+      </div>
+      
+      {/* Main content */}
+      <div className={`main-wrapper ${sidebarCollapsed ? 'expanded' : ''}`}>
+        <Header toggleSidebar={toggleSidebar} />
         <main className="main-content">
           <Outlet />
         </main>

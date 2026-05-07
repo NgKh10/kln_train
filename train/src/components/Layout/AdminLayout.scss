@@ -6,41 +6,21 @@
   background: $bg-light;
   position: relative;
 
-  .sideBar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    z-index: 1000;
-    transition: transform 0.3s ease;
-    
-    // Trên desktop: luôn hiện
-    @media (min-width: 1025px) {
-      transform: translateX(0) !important;
-    }
-    
-    // Trên mobile: ẩn đi
-    @media (max-width: 1024px) {
-      transform: translateX(-100%);
-      
-      &.mobile-open {
-        transform: translateX(0);
-      }
-    }
-  }
-
   .main-wrapper {
     flex: 1;
     margin-left: 280px;
     transition: all 0.3s ease;
     min-height: 100vh;
+    width: calc(100% - 280px);
 
     @media (max-width: 1024px) {
       margin-left: 0;
+      width: 100%;
     }
 
     &.expanded {
       margin-left: 80px;
+      width: calc(100% - 80px);
     }
 
     .main-content {

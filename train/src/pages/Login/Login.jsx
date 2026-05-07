@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { authAPI } from '../../services/api';
 import './Login.scss';
 import logo from '../../assets/images/logo.png';
 
@@ -9,7 +9,6 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -18,10 +17,25 @@ const Login = () => {
     setLoading(true);
 
     try {
-      await login(email, password);
-      navigate('/dashboard');
+      const response = await authAPI.login(email, password);
+      console.log('Response:', response.data); // Debug
+      
+      if (response.data.success) {
+        // Lưu thông tin vào localStorage
+        localStorage.setItem('admin_token', response.data.token || 'mock_token');
+        localStorage.setItem('admin_user', JSON.stringify(response.data.user));
+        
+        console.log('Đã lưu user:', response.data.user); // Debug
+        console.log('Chuyển sang dashboard...'); // Debug
+        
+        // Chuyển trang
+         window.location.href = '/dashboard';
+      } else {
+        setError(response.data.message || 'Đăng nhập thất bại');
+      }
     } catch (err) {
-      setError(err.message || 'Email hoặc mật khẩu không đúng');
+      console.error('Lỗi:', err);
+      setError(err.response?.data?.message || 'Đăng nhập thất bại');
     } finally {
       setLoading(false);
     }
@@ -32,8 +46,8 @@ const Login = () => {
       <div className="login-card">
         <div className="login-header">
           <img src={logo} alt="Train Logo" />
-          <h2>Train.</h2>
-          <p>Đăng nhập hệ thống</p>
+          <h2>Train.Admin</h2>
+          <p>Đăng nhập để quản lý hệ thống</p>
         </div>
 
         {error && <div className="alert-error">{error}</div>}

@@ -1,15 +1,15 @@
 const sql = require('mssql');
 
 const dbConfig = {
-  server: 'NGOCKHUE_10',
-  database: 'Dat_ve_tau',
-  options: {
-    encrypt: false,
-    trustServerCertificate: true,
-    enableArithAbort: true,
-    trustedConnection: true
-  }
-};
+   user: 'sa',
+   password: '12345678',
+   server: 'NGOCKHUE_10',
+   database: 'Dat_ve_tau',
+   options: {
+     encrypt: false,
+     trustServerCertificate: true
+   }
+ };
 
 const pool = new sql.ConnectionPool(dbConfig);
 const poolConnect = pool.connect();
