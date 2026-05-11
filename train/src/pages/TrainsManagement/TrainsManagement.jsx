@@ -46,7 +46,7 @@ const TrainsManagement = () => {
       const res = await trainAPI.getAll();
       let trainsData = res.data.data || [];
 
-  // ⭐ SẮP XẾP THEO MÃ TÀU (SỐ HIỆU)
+  // SẮP XẾP THEO MÃ TÀU (SỐ HIỆU)
       trainsData.sort((a, b) => {
         // Tách số từ số hiệu để sắp xếp đúng (VD: SE1, SE2, SE10, TN1...)
         const aNum = parseInt(a.so_hieu.match(/\d+/) || [0]);
@@ -181,7 +181,6 @@ const TrainsManagement = () => {
       <div className="page-header">
         <div>
           <h1 className="page-title">Quản lý tàu</h1>
-          <p className="page-subtitle">Quản lý danh sách tàu, cấu hình toa và ghế</p>
         </div>
         <button className="btn-primary" onClick={handleAddTrain}>
           <FiPlus /> Thêm tàu mới

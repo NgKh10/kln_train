@@ -1,5 +1,5 @@
 @import '../../styles/variables';
-
+@import '../../styles/global';
 .stations-management {
   .page-header {
     display: flex;
@@ -187,7 +187,7 @@
     font-size: 12px;
     font-weight: 500;
     
-    &.badge-success {
+    &.badge-success { 
       background: rgba($success, 0.1);
       color: $success;
     }

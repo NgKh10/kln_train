@@ -74,7 +74,7 @@ const CustomersManagement = () => {
       key: 'actions',
       render: (_, row) => (
         <button className="btn-view" onClick={() => handleView(row)}>
-          <FiEye /> Chi tiết
+          <FiEye />
         </button>
       )
     }

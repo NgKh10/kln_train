@@ -1,5 +1,4 @@
 @import '../../styles/variables';
-
 .trains-management {
   .page-header {
     display: flex;
@@ -133,7 +132,7 @@
   .action-buttons {
     display: flex;
     gap: 8px;
-    
+    justify-content: center;
     button {
       width: 32px;
       height: 32px;
@@ -143,6 +142,7 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      margin: 0; 
       transition: all 0.3s;
       
       &.btn-view {

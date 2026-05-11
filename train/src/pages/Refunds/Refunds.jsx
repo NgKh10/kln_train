@@ -105,7 +105,7 @@ const Refunds = () => {
       key: 'actions',
       render: (_, row) => (
         <button className="btn-view" onClick={() => { setSelectedRefund(row); setShowDetailModal(true); }}>
-          <FiEye /> Chi tiết
+          <FiEye /> 
         </button>
       )
     }
@@ -125,7 +125,6 @@ const Refunds = () => {
       <div className="page-header">
         <div>
           <h1 className="page-title">Quản lý hủy vé & hoàn tiền</h1>
-          <p className="page-subtitle">Quản lý các yêu cầu hủy vé và hoàn tiền</p>
         </div>
       </div>
 

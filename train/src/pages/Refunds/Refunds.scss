@@ -1,5 +1,4 @@
 @import '../../styles/variables';
-
 .refunds-page {
   .page-header {
     margin-bottom: 24px;
@@ -155,6 +154,35 @@
       gap: 12px;
       padding-top: 16px;
       border-top: 1px solid $light;
+      
+      // Style riêng cho button trong refund-actions
+      button {
+        width: auto;           // Tự động theo nội dung
+        height: auto;          // Tự động theo nội dung
+        padding: 10px 20px;    // Padding cho đẹp
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        gap: 8px;
+        
+        &.btn-secondary {
+          background: $gray;
+          color: white;
+          
+          &:hover {
+            background: darken($gray, 10%);
+          }
+        }
+        
+        &.btn-primary {
+          background: $primary;
+          color: white;
+          
+          &:hover {
+            background: $primary-dark;
+          }
+        }
+      }
     }
   }
   
@@ -176,3 +204,27 @@
     &.status-cancelled { background: rgba($danger, 0.1); color: $danger; }
   }
 }
+
+  // Action buttons
+  .action-buttons {
+    display: flex;
+    gap: 8px;
+    
+    button {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      
+      &.btn-view {
+        background: rgba($info, 0.1);
+        color: $info;
+        &:hover { background: $info; color: white; }
+      }
+    }
+  }

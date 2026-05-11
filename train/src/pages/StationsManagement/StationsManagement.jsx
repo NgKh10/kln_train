@@ -144,7 +144,7 @@ const StationsManagement = () => {
           <button className="btn-delete" onClick={() => handleDelete(row)}><FiTrash2 /></button>
         </div>
       )
-    }
+    } 
   ];
 
   if (loading) return <LoadingSpinner />;
@@ -154,7 +154,6 @@ const StationsManagement = () => {
       <div className="page-header">
         <div>
           <h1 className="page-title">Quản lý ga tàu</h1>
-          <p className="page-subtitle">Quản lý danh sách ga trên toàn quốc</p>
         </div>
         <button className="btn-primary" onClick={handleAdd}>
           <FiPlus /> Thêm ga mới
