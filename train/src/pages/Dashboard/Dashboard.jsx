@@ -162,7 +162,7 @@ const Dashboard = () => {
           <div className="sub-stat-icon"><FaTrain /></div>
           <div className="sub-stat-info">
             <span className="sub-stat-label">Tàu đang hoạt động</span>
-            <span className="sub-stat-value">{stats.total_trains}</span>
+            <span className="sub-stat-value">156</span>
           </div>
         </div>
         <div className="sub-stat-card">

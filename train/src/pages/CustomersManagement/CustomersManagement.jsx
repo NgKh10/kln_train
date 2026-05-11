@@ -18,7 +18,7 @@ const CustomersManagement = () => {
       so_dien_thoai: '0912345678',
       cccd: '012345678901',
       loai_hanh_khach: 'nguoi_lon',
-      tong_ve_da_mua: 12,
+      tong_ve_da_mua: 3,
       tong_tien: 15000000
     },
     { 
