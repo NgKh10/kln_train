@@ -46,8 +46,8 @@ const Login = () => {
       <div className="login-card">
         <div className="login-header">
           <img src={logo} alt="Train Logo" />
-          <h2>Train.Admin</h2>
-          <p>Đăng nhập để quản lý hệ thống</p>
+          <h2>KLN Train</h2>
+          <p>Đăng nhập hệ thống</p>
         </div>
 
         {error && <div className="alert-error">{error}</div>}
