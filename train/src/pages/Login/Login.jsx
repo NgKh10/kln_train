@@ -59,7 +59,7 @@ const Login = () => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@vnr.com.vn"
+              placeholder="Nhập địa chỉ email"
               required
             />
           </div>
@@ -81,7 +81,7 @@ const Login = () => {
         </form>
 
         <div className="login-footer">
-          <p>Tài khoản: admin@vnr.com.vn / admin</p>
+          <p>Tài khoản: admin@vnr.com.vn / MK:admin</p>
         </div>
       </div>
     </div>

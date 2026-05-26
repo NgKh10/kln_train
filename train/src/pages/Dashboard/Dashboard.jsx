@@ -65,8 +65,8 @@ const Dashboard = () => {
       // Dùng mock data nếu lỗi
       setStats({
         total_revenue: 12568000000,
-        total_tickets: 28450,
-        total_customers: 45680
+        total_tickets: 8450,
+        total_customers: 5680
       });
     } finally {
       setLoading(false);
@@ -162,7 +162,7 @@ const Dashboard = () => {
           <div className="sub-stat-icon"><FaTrain /></div>
           <div className="sub-stat-info">
             <span className="sub-stat-label">Tàu đang hoạt động</span>
-            <span className="sub-stat-value">156</span>
+            <span className="sub-stat-value">26</span>
           </div>
         </div>
         <div className="sub-stat-card">

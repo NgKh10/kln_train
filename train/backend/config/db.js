@@ -15,18 +15,18 @@ const pool = new sql.ConnectionPool(dbConfig);
 const poolConnect = pool.connect();
 
 pool.on('error', err => {
-  console.error('❌ Lỗi database:', err.message);
+  console.error('Lỗi database:', err.message);
 });
 
 async function testConnection() {
   try {
     await poolConnect;
-    console.log('✅ Kết nối SQL Server thành công!');
-    console.log(`📊 Database: ${dbConfig.database}`);
-    console.log(`🖥️ Server: ${dbConfig.server}`);
+    console.log('Kết nối SQL Server thành công!');
+    console.log(`Database: ${dbConfig.database}`);
+    console.log(`Server: ${dbConfig.server}`);
     return true;
   } catch (err) {
-    console.error('❌ Kết nối SQL Server thất bại:', err.message);
+    console.error('Kết nối SQL Server thất bại:', err.message);
     return false;
   }
 }
@@ -50,7 +50,7 @@ async function executeQuery(query, params = {}) {
     const result = await request.query(query);
     return result;
   } catch (err) {
-    console.error('❌ Lỗi query:', err.message);
+    console.error('Lỗi query:', err.message);
     throw err;
   }
 }

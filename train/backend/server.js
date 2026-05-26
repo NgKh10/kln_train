@@ -63,7 +63,7 @@ app.post('/api/auth/login', async (req, res) => {
       { email }
     );
     
-    console.log('📊 Query result:', result.recordset.length);
+    console.log(' Query result:', result.recordset.length);
     
     if (result.recordset.length === 0) {
       return res.status(401).json({ 
@@ -76,7 +76,7 @@ app.post('/api/auth/login', async (req, res) => {
     
     // Kiểm tra mật khẩu
     if (password !== user.mat_khau) {
-      console.log('❌ Sai mật khẩu');
+      console.log(' Sai mật khẩu');
       return res.status(401).json({ 
         success: false, 
         message: 'Email hoặc mật khẩu không đúng' 
@@ -99,7 +99,7 @@ app.post('/api/auth/login', async (req, res) => {
       });
     }
     
-    console.log('✅ Đăng nhập thành công:', user.ho_ten);
+    console.log(' Đăng nhập thành công:', user.ho_ten);
     
     res.json({
       success: true,
@@ -112,7 +112,7 @@ app.post('/api/auth/login', async (req, res) => {
     });
     
   } catch (error) {
-    console.error('❌ Lỗi đăng nhập:', error);
+    console.error(' Lỗi đăng nhập:', error);
     res.status(500).json({ 
       success: false, 
       message: 'Lỗi server, vui lòng thử lại sau' 
@@ -235,18 +235,18 @@ app.get('/api/health', (req, res) => {
 const PORT = process.env.PORT || 5000;
 
 async function startServer() {
-  console.log('\n🚀 Đang khởi động server...\n');
+  console.log('\n Đang khởi động server...\n');
   
   // Kiểm tra kết nối database
   const dbConnected = await testConnection();
   
   if (!dbConnected) {
-    console.log('⚠️ Không thể kết nối database, server vẫn chạy nhưng API database sẽ lỗi');
+    console.log(' Không thể kết nối database, server vẫn chạy nhưng API database sẽ lỗi');
   }
   
   app.listen(PORT, () => {
-    console.log(`\n🚀 Server running on http://localhost:${PORT}`);
-    console.log(`\n📌 API Endpoints:`);
+    console.log(`\n Server running on http://localhost:${PORT}`);
+    console.log(`\n API Endpoints:`);
     console.log(`   POST http://localhost:${PORT}/api/auth/login`);
     console.log(`   GET  http://localhost:${PORT}/api/dashboard/stats`);
     console.log(`   GET  http://localhost:${PORT}/api/coupons`);
