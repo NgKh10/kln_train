@@ -100,7 +100,6 @@ const CustomersManagement = () => {
       <div className="page-header">
         <div>
           <h1 className="page-title">Quản lý khách hàng</h1>
-          <p className="page-subtitle">Quản lý thông tin khách hàng, lịch sử mua vé</p>
         </div>
       </div>
       
