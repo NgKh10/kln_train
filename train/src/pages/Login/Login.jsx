@@ -17,7 +17,10 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await authAPI.login(email, password);
+    const response = await authAPI.login({
+      email,
+      password
+    });
       console.log('Response:', response.data); // Debug
       
       if (response.data.success) {
@@ -81,7 +84,7 @@ const Login = () => {
         </form>
 
         <div className="login-footer">
-          <p>Tài khoản: admin@vnr.com.vn / MK:admin</p>
+          <p>TK: admin@klntrain.vn / MK:admin123</p>
         </div>
       </div>
     </div>

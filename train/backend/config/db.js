@@ -1,20 +1,14 @@
 const sql = require('mssql');
 
 const config = {
-  user: 'sa',
-  password: '12345678',
-  server: process.env.DB_SERVER || 'NGOCKHUE_10',
-  database: process.env.DB_DATABASE || 'KLN_Train',
+  user: 'sa',  // tên user SQL
+  password: '12345678',  // mật khẩu
+  server: 'NGOCKHUE_10',
+  database: 'KLN_Train',
   options: {
     encrypt: false,
     trustServerCertificate: true,
-    enableArithAbort: true,
-    trustedConnection: true
-  },
-  pool: {
-    max: 10,
-    min: 0,
-    idleTimeoutMillis: 30000
+    enableArithAbort: true
   }
 };
 
@@ -24,6 +18,19 @@ const poolConnect = pool.connect();
 pool.on('error', err => {
   console.error('❌ Database error:', err.message);
 });
+
+async function testConnection() {
+  try {
+    await poolConnect;
+    console.log('✅ Kết nối SQL Server thành công!');
+    console.log(`📊 Database: ${config.database}`);
+    console.log(`🖥️ Server: ${config.server}`);
+    return true;
+  } catch (err) {
+    console.error('❌ Kết nối SQL Server thất bại:', err.message);
+    return false;
+  }
+}
 
 async function executeQuery(query, params = {}) {
   try {
@@ -43,34 +50,17 @@ async function executeQuery(query, params = {}) {
       }
     });
     
-    return await request.query(query);
+    const result = await request.query(query);
+    return result;
   } catch (err) {
-    console.error('Query error:', err);
+    console.error('❌ Lỗi query:', err.message);
     throw err;
   }
 }
 
-async function executeProcedure(procedureName, params = {}) {
-  try {
-    await poolConnect;
-    const request = pool.request();
-    
-    Object.keys(params).forEach(key => {
-      const value = params[key];
-      if (value === undefined || value === null) {
-        request.input(key, sql.NVarChar, null);
-      } else if (typeof value === 'number') {
-        request.input(key, sql.Int, value);
-      } else {
-        request.input(key, sql.NVarChar, value);
-      }
-    });
-    
-    return await request.execute(procedureName);
-  } catch (err) {
-    console.error(`Procedure ${procedureName} error:`, err);
-    throw err;
-  }
-}
-
-module.exports = { executeQuery, executeProcedure, pool };
+module.exports = {
+  sql,
+  executeQuery,
+  testConnection,
+  pool
+};

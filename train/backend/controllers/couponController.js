@@ -72,3 +72,36 @@ exports.deleteCoupon = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+exports.getCouponById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await executeQuery(
+      `
+      SELECT *
+      FROM KhuyenMai
+      WHERE id_khuyen_mai = @id
+      `,
+      { id }
+    );
+
+    if (result.recordset.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Không tìm thấy khuyến mãi'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: result.recordset[0]
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};

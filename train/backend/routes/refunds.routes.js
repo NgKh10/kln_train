@@ -8,7 +8,7 @@ router.use(authorize('quan_tri', 'nhan_vien'));
 
 router.get('/', refundController.getAllRefunds);
 router.get('/stats', refundController.getRefundStats);
-router.get('/:id', refundController.getRefundDetail);
+//router.get('/:id', refundController.getRefundDetail);
 router.put('/:id/confirm', refundController.confirmRefund);
 router.put('/:id/reject', refundController.rejectRefund);
 

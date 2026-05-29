@@ -8,7 +8,7 @@ router.use(authenticate);
 // Người dùng thường
 router.get('/', notificationController.getNotifications);
 router.put('/:id/read', notificationController.markAsRead);
-router.put('/read-all', notificationController.markAllAsRead);
+//router.put('/read-all', notificationController.markAllAsRead);
 
 // Quản trị viên
 router.post('/broadcast', authorize('quan_tri'), notificationController.sendBroadcastNotification);

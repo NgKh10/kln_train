@@ -6,8 +6,8 @@ import logo from '../../assets/images/logo.png'
 
 import { IoMdSpeedometer } from "react-icons/io";
 import { FaTrain, FaTicketAlt } from "react-icons/fa";
-import { FiMapPin, FiCalendar, FiUsers, FiCreditCard, FiPercent, FiSettings, FiLogOut } from "react-icons/fi";
-import { MdOutlinePayment, MdOutlineReportProblem } from "react-icons/md";
+import { FiMapPin, FiCalendar, FiUsers, FiCreditCard, FiPercent, FiSettings, FiLogOut, FiGrid, FiBell, FiDollarSign } from "react-icons/fi";
+import { MdOutlinePayment, MdOutlineReportProblem, MdOutlineCarRental } from "react-icons/md";
 import { AiOutlinePieChart } from "react-icons/ai";
 import { BiTrendingUp } from "react-icons/bi";
 import { BsQuestionCircle } from "react-icons/bs";
@@ -31,8 +31,9 @@ const Sidebar = ({ collapsed, toggleCollapse, mobileOpen }) => {
         )}
       </div>
 
+      {/* DASHBOARD */}
       <div className="menuDiv">
-        <h3 className="divTitle">QUICK MENU</h3>
+        <h3 className="divTitle">DASHBOARD</h3>
         <ul className="menuLists grid">
           <li className="listItem">
             <NavLink to="/dashboard" className={({ isActive }) => `menuLink flex ${isActive ? 'active' : ''}`}>
@@ -40,49 +41,31 @@ const Sidebar = ({ collapsed, toggleCollapse, mobileOpen }) => {
               <span className="smallText">Tổng quan</span>
             </NavLink>
           </li>
+        </ul>
+      </div>
 
+      {/* QUẢN LÝ BÁN VÉ */}
+      <div className="menuDiv">
+        <h3 className="divTitle">BÁN VÉ</h3>
+        <ul className="menuLists grid">
           <li className="listItem">
             <NavLink to="/tickets" className={({ isActive }) => `menuLink flex ${isActive ? 'active' : ''}`}>
               <FaTicketAlt className='icon' />
               <span className="smallText">Quản lý vé</span>
             </NavLink>
           </li>
-
           <li className="listItem">
-            <NavLink to="/trains" className={({ isActive }) => `menuLink flex ${isActive ? 'active' : ''}`}>
-              <FaTrain className='icon' />
-              <span className="smallText">Quản lý tàu</span>
+            <NavLink to="/refunds" className={({ isActive }) => `menuLink flex ${isActive ? 'active' : ''}`}>
+              <MdOutlineReportProblem className='icon' />
+              <span className="smallText">Hủy & Hoàn tiền</span>
             </NavLink>
           </li>
-
-          <li className="listItem">
-            <NavLink to="/stations" className={({ isActive }) => `menuLink flex ${isActive ? 'active' : ''}`}>
-              <FiMapPin className='icon' />
-              <span className="smallText">Quản lý ga</span>
-            </NavLink>
-          </li>
-
-          <li className="listItem">
-            <NavLink to="/schedules" className={({ isActive }) => `menuLink flex ${isActive ? 'active' : ''}`}>
-              <FiCalendar className='icon' />
-              <span className="smallText">Lịch chạy tàu</span>
-            </NavLink>
-          </li>
-
-          <li className="listItem">
-            <NavLink to="/customers" className={({ isActive }) => `menuLink flex ${isActive ? 'active' : ''}`}>
-              <FiUsers className='icon' />
-              <span className="smallText">Quản lý khách hàng</span>
-            </NavLink>
-          </li>
-
           <li className="listItem">
             <NavLink to="/payments" className={({ isActive }) => `menuLink flex ${isActive ? 'active' : ''}`}>
               <MdOutlinePayment className='icon' />
               <span className="smallText">Quản lý thanh toán</span>
             </NavLink>
           </li>
-
           <li className="listItem">
             <NavLink to="/coupons" className={({ isActive }) => `menuLink flex ${isActive ? 'active' : ''}`}>
               <FiPercent className='icon' />
@@ -92,8 +75,84 @@ const Sidebar = ({ collapsed, toggleCollapse, mobileOpen }) => {
         </ul>
       </div>
 
+      {/* QUẢN LÝ HẠ TẦNG */}
+      <div className="menuDiv">
+        <h3 className="divTitle">HẠ TẦNG</h3>
+        <ul className="menuLists grid">
+          <li className="listItem">
+            <NavLink to="/trains" className={({ isActive }) => `menuLink flex ${isActive ? 'active' : ''}`}>
+              <FaTrain className='icon' />
+              <span className="smallText">Quản lý tàu</span>
+            </NavLink>
+          </li>
+          <li className="listItem">
+            <NavLink to="/carriage-types" className={({ isActive }) => `menuLink flex ${isActive ? 'active' : ''}`}>
+              <MdOutlineCarRental className='icon' />
+              <span className="smallText">Loại toa</span>
+            </NavLink>
+          </li>
+          <li className="listItem">
+            <NavLink to="/seat-types" className={({ isActive }) => `menuLink flex ${isActive ? 'active' : ''}`}>
+              <FiGrid className='icon' />
+              <span className="smallText">Loại ghế</span>
+            </NavLink>
+          </li>
+          <li className="listItem">
+            <NavLink to="/stations" className={({ isActive }) => `menuLink flex ${isActive ? 'active' : ''}`}>
+              <FiMapPin className='icon' />
+              <span className="smallText">Quản lý ga</span>
+            </NavLink>
+          </li>
+          <li className="listItem">
+            <NavLink to="/schedules" className={({ isActive }) => `menuLink flex ${isActive ? 'active' : ''}`}>
+              <FiCalendar className='icon' />
+              <span className="smallText">Lịch chạy tàu</span>
+            </NavLink>
+          </li>
+        </ul>
+      </div>
+
+      {/* CHÍNH SÁCH & GIÁ */}
+      <div className="menuDiv">
+        <h3 className="divTitle">CHÍNH SÁCH & GIÁ</h3>
+        <ul className="menuLists grid">
+          <li className="listItem">
+            <NavLink to="/price-policies" className={({ isActive }) => `menuLink flex ${isActive ? 'active' : ''}`}>
+              <FiDollarSign className='icon' />
+              <span className="smallText">Biểu giá</span>
+            </NavLink>
+          </li>
+          <li className="listItem">
+            <NavLink to="/policies" className={({ isActive }) => `menuLink flex ${isActive ? 'active' : ''}`}>
+              <BiTrendingUp className='icon' />
+              <span className="smallText">Chính sách giá</span>
+            </NavLink>
+          </li>
+        </ul>
+      </div>
+
+      {/* KHÁCH HÀNG & NGƯỜI DÙNG */}
+      <div className="menuDiv">
+        <h3 className="divTitle">KHÁCH HÀNG</h3>
+        <ul className="menuLists grid">
+          <li className="listItem">
+            <NavLink to="/customers" className={({ isActive }) => `menuLink flex ${isActive ? 'active' : ''}`}>
+              <FiUsers className='icon' />
+              <span className="smallText">Quản lý khách hàng</span>
+            </NavLink>
+          </li>
+          <li className="listItem">
+            <NavLink to="/users" className={({ isActive }) => `menuLink flex ${isActive ? 'active' : ''}`}>
+              <FiSettings className='icon' />
+              <span className="smallText">Quản lý người dùng</span>
+            </NavLink>
+          </li>
+        </ul>
+      </div>
+
+      {/* BÁO CÁO & THỐNG KÊ */}
       <div className="settingsDiv">
-        <h3 className="divTitle">REPORT & STATS</h3>
+        <h3 className="divTitle">BÁO CÁO</h3>
         <ul className="menuLists grid">
           <li className="listItem">
             <NavLink to="/reports" className={({ isActive }) => `menuLink flex ${isActive ? 'active' : ''}`}>
@@ -101,21 +160,12 @@ const Sidebar = ({ collapsed, toggleCollapse, mobileOpen }) => {
               <span className="smallText">Báo cáo & Thống kê</span>
             </NavLink>
           </li>
-
           <li className="listItem">
-            <NavLink to="/policies" className={({ isActive }) => `menuLink flex ${isActive ? 'active' : ''}`}>
-              <BiTrendingUp className='icon' />
-              <span className="smallText">Chính sách giá</span>
+            <NavLink to="/notifications" className={({ isActive }) => `menuLink flex ${isActive ? 'active' : ''}`}>
+              <FiBell className='icon' />
+              <span className="smallText">Thông báo</span>
             </NavLink>
           </li>
-
-          <li className="listItem">
-            <NavLink to="/refunds" className={({ isActive }) => `menuLink flex ${isActive ? 'active' : ''}`}>
-              <MdOutlineReportProblem className='icon' />
-              <span className="smallText">Hủy & Hoàn tiền</span>
-            </NavLink>
-          </li>
-
           <li className="listItem">
             <NavLink to="/settings" className={({ isActive }) => `menuLink flex ${isActive ? 'active' : ''}`}>
               <FiSettings className='icon' />

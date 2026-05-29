@@ -48,16 +48,16 @@ exports.login = async (req, res) => {
     );
     
     // Ghi log đăng nhập (tùy chọn)
-    await executeQuery(`
-      INSERT INTO AuditLog (bang, ma_ban_ghi, hanh_dong, gia_tri_moi, id_tai_khoan, ip_address, user_agent, thoi_gian)
-      VALUES ('TaiKhoan', @ma_ban_ghi, 'LOGIN', @gia_tri_moi, @id_tai_khoan, @ip, @user_agent, GETDATE())
-    `, {
-      ma_ban_ghi: user.id_tai_khoan.toString(),
-      gia_tri_moi: JSON.stringify({ email: user.email, thoi_gian: new Date() }),
-      id_tai_khoan: user.id_tai_khoan,
-      ip: req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress,
-      user_agent: req.headers['user-agent']
-    });
+   // await executeQuery(`
+   //   INSERT INTO AuditLog (bang, ma_ban_ghi, hanh_dong, gia_tri_moi, id_tai_khoan, ip_address, user_agent, thoi_gian)
+   //   VALUES ('TaiKhoan', @ma_ban_ghi, 'LOGIN', @gia_tri_moi, @id_tai_khoan, @ip, @user_agent, GETDATE())
+   // `, {
+   //   ma_ban_ghi: user.id_tai_khoan.toString(),
+   //   gia_tri_moi: JSON.stringify({ email: user.email, thoi_gian: new Date() }),
+   //   id_tai_khoan: user.id_tai_khoan,
+   //   ip: req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress,
+   //   user_agent: req.headers['user-agent']
+   // });
     
     res.json({
       success: true,

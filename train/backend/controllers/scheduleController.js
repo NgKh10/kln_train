@@ -127,3 +127,23 @@ exports.generateActualTrips = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+exports.updateSchedule = async (req, res) => {
+  res.json({ success: true, message: 'updateSchedule' });
+};
+
+exports.getStopStations = async (req, res) => {
+  res.json({ success: true, data: [] });
+};
+
+exports.removeStopStation = async (req, res) => {
+  res.json({ success: true, message: 'removeStopStation' });
+};
+
+exports.getActualTrips = async (req, res) => {
+  res.json({ success: true, data: [] });
+};
+
+exports.updateTripStatus = async (req, res) => {
+  res.json({ success: true, message: 'updateTripStatus' });
+};
