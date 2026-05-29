@@ -21,19 +21,49 @@ const TicketsManagement = () => {
     loadTickets();
   }, []);
 
-  const loadTickets = async () => {
-    setLoading(true);
-    try {
-      const res = await ticketAPI.getAll();
-      setTickets(res.data.data || []);
-    } catch (error) {
-      console.error('Lỗi tải vé:', error);
-    } finally {
+const loadTickets = async () => {
+  setLoading(true);
+  try {
+    const res = await ticketAPI.getAll();
+    console.log('📦 API Response:', res.data); // Debug - xem dữ liệu trả về
+    
+    // Lấy dữ liệu từ API
+    let ticketsData = res.data.data || [];
+    
+    // Nếu không có dữ liệu, hiển thị thông báo thay vì mock data
+    if (ticketsData.length === 0) {
+      console.log('⚠️ Không có dữ liệu vé từ database');
+      setTickets([]);
       setLoading(false);
+      return;
     }
-  };
+    
+    // Format dữ liệu
+    ticketsData = ticketsData.map(ticket => ({
+      ma_ve: ticket.id_ve || ticket.ma_ve,
+      hanh_khach: ticket.ho_ten || ticket.hanh_khach,
+      chuyen_tau: ticket.so_hieu || ticket.chuyen_tau,
+      ga_len: ticket.ga_di || ticket.ga_len,
+      ga_xuong: ticket.ga_den || ticket.ga_xuong,
+      ngay_di: ticket.ngay_chay || ticket.ngay_di,
+      gio_di: ticket.gio_di,
+      so_toa: ticket.so_toa_thu_tu,
+      so_ghe: ticket.so_ghe_trong_toa,
+      gia_ve: ticket.gia_ve,
+      trang_thai: ticket.trang_thai === 'da_xac_nhan' ? 'hieu_luc' : ticket.trang_thai,
+      ngay_dat: ticket.ngay_xuat_ve?.split('T')[0]
+    }));
+    
+    setTickets(ticketsData);
+  } catch (error) {
+    console.error('❌ Lỗi tải vé:', error);
+    setTickets([]); // Không dùng mock data nữa
+  } finally {
+    setLoading(false);
+  }
+};
 
-  const handleConfirmTicket = (ticket) => {
+  const handleConfirmTicket = async (ticket) => {
     if (ticket.trang_thai !== 'hieu_luc') {
       alert('⚠️ Vé không ở trạng thái có hiệu lực để xác nhận');
       return;
@@ -68,7 +98,6 @@ const TicketsManagement = () => {
     }
   };
 
-  // Xử lý hủy vé
   const processCancelTicket = async () => {
     const lyDo = prompt('Nhập lý do hủy vé:');
     if (!lyDo) {
@@ -77,7 +106,7 @@ const TicketsManagement = () => {
     }
     
     try {
-      await ticketAPI.cancel(selectedTicket.ma_ve, lyDo);
+      await ticketAPI.cancel(selectedTicket.ma_ve, { ly_do: lyDo });
       alert(`❌ Đã hủy vé ${selectedTicket.ma_ve}`);
       await loadTickets();
     } catch (error) {
@@ -90,9 +119,6 @@ const TicketsManagement = () => {
     }
   };
 
-  // In vé
-  // In vé theo format boarding pass
-const handlePrintTicket = (ticket) => {
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
   };
@@ -103,12 +129,6 @@ const handlePrintTicket = (ticket) => {
     return date.toLocaleDateString('vi-VN');
   };
 
-  const formatTime = () => {
-    const now = new Date();
-    return now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
-  };
-
-  // Tạo mã đặt chỗ ngẫu nhiên
   const generateBookingCode = () => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let result = '';
@@ -118,366 +138,100 @@ const handlePrintTicket = (ticket) => {
     return result;
   };
 
-  const bookingCode = generateBookingCode();
-  const currentDate = new Date().toLocaleDateString('vi-VN');
-  const currentTime = formatTime();
-
-  const printWindow = window.open('', '_blank');
-  printWindow.document.write(`
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>Vé tàu ${ticket.ma_ve} - KNL TRAIN</title>
-      <meta charset="UTF-8">
-      <style>
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-        }
-        
-        body {
-          font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
-          background: #FDF2D6;
-          padding: 40px 20px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          min-height: 100vh;
-        }
-        
-        .boarding-pass {
-          max-width: 550px;
-          width: 100%;
-          background: white;
-          border-radius: 20px;
-          overflow: hidden;
-          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-          position: relative;
-        }
-        
-        /* Header */
-        .header {
-          background: #8C1D19;
-          padding: 20px;
-          text-align: center;
-          position: relative;
-        }
-        
-        .header h1 {
-          color: #FDF2D6;
-          font-size: 24px;
-          letter-spacing: 2px;
-          margin-bottom: 5px;
-        }
-        
-        .header p {
-          color: rgba(255, 255, 255, 0.8);
-          font-size: 12px;
-        }
-        
-        .header .train-logo {
-          font-size: 40px;
-          margin-bottom: 5px;
-        }
-        
-        /* Nội dung chính */
-        .content {
-          padding: 25px;
-        }
-        
-        /* Thông tin hành trình */
-        .journey-section {
-          background: #ffffff;
-          border-radius: 12px;
-          padding: 20px;
-          margin-bottom: 20px;
-        }
-        
-        .section-title {
-          color: #562D2E;
-          font-size: 14px;
-          font-weight: bold;
-          margin-bottom: 15px;
-          padding-bottom: 8px;
-          border-bottom: 2px solid #8C1D19;
-          display: inline-block;
-        }
-        
-        .journey-info {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 15px;
-        }
-        
-        .station {
-          text-align: center;
-        }
-        
-        .station .name {
-          font-size: 18px;
-          font-weight: bold;
-          color: #562D2E;
-        }
-        
-        .station .code {
-          font-size: 11px;
-          color: #8C1D19;
-          margin-top: 4px;
-        }
-        
-        .arrow {
-          font-size: 24px;
-          color: #8C1D19;
-        }
-        
-        .journey-details {
-          display: flex;
-          justify-content: space-between;
-          margin-top: 15px;
-          padding-top: 15px;
-          border-top: 1px dashed #8C1D19;
-        }
-        
-        .detail-item {
-          text-align: center;
-          flex: 1;
-        }
-        
-        .detail-item .label {
-          font-size: 11px;
-          color: #8C1D19;
-          display: block;
-          margin-bottom: 5px;
-        }
-        
-        .detail-item .value {
-          font-size: 14px;
-          font-weight: bold;
-          color: #562D2E;
-        }
-        
-        /* Thông tin hành khách */
-        .passenger-section {
-          background: white;
-          border: 1px solid #ffffff;
-          border-radius: 12px;
-          padding: 20px;
-          margin-bottom: 20px;
-          background: #ffffff;
-        }
-        
-        .info-row {
-          display: flex;
-          margin-bottom: 12px;
-          padding-bottom: 8px;
-          border-bottom: 1px solid #ffffff;
-        }
-        
-        .info-row .label {
-          width: 100px;
-          font-size: 12px;
-          color: #8C1D19;
-          font-weight: 500;
-        }
-        
-        .info-row .value {
-          flex: 1;
-          font-size: 13px;
-          color: #562D2E;
-          font-weight: 500;
-        }
-        
-        /* Mã vé và QR */
-        .ticket-code-section {
-          background: #ffffff;
-          border-radius: 12px;
-          padding: 20px;
-          text-align: center;
-          margin-bottom: 20px;
-        }
-        
-        .ticket-code-section .code {
-          font-size: 20px;
-          font-weight: bold;
-          color: #8C1D19;
-          letter-spacing: 2px;
-          margin-bottom: 15px;
-        }
-        
-        .qr-placeholder {
-          display: inline-block;
-          background: white;
-          padding: 10px;
-          border-radius: 12px;
-          margin-bottom: 10px;
-        }
-        
-        .qr-placeholder svg {
-          width: 120px;
-          height: 120px;
-        }
-        
-        .qr-note {
-          font-size: 11px;
-          color: #562D2E;
-        }
-        
-        /* Footer */
-        .footer {
-          background: #562D2E;
-          padding: 15px;
-          text-align: center;
-        }
-        
-        .footer p {
-          color: #ffffff;
-          font-size: 11px;
-          margin: 3px 0;
-        }
-        
-        .footer .thanks {
-          font-weight: bold;
-          margin-bottom: 8px;
-        }
-        
-        /* Dotted line */
-        .dotted-line {
-          height: 2px;
-          background: repeating-linear-gradient(90deg, #8C1D19, #8C1D19 10px, transparent 10px, transparent 20px);
-          margin: 0 25px;
-        }
-        
-        /* Utility */
-        .text-center {
-          text-align: center;
-        }
-        
-        .mt-2 {
-          margin-top: 10px;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="boarding-pass">
-        <!-- Header -->
-        <div class="header">
-          <div class="train-logo"></div>
-          <h1>KLN TRAIN</h1>
-        </div>
-        
-        <!-- Content -->
-        <div class="content">
-          <!-- Thông tin hành trình -->
-          <div class="journey-section">
-            <div class="section-title">THÔNG TIN HÀNH TRÌNH</div>
-            <div class="journey-info">
-              <div class="station">
-                <div class="name">${ticket.ga_len || '---'}</div>
-                <div class="code">GA ĐI</div>
+  const handlePrintTicket = (ticket) => {
+    const bookingCode = generateBookingCode();
+    const currentDate = new Date().toLocaleDateString('vi-VN');
+    const currentTime = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+    
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Vé tàu ${ticket.ma_ve} - KNL TRAIN</title>
+        <meta charset="UTF-8">
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { font-family: 'Segoe UI', Arial, sans-serif; background: #FDF2D6; padding: 40px 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+          .boarding-pass { max-width: 550px; width: 100%; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
+          .header { background: #8C1D19; padding: 20px; text-align: center; }
+          .header h1 { color: #FDF2D6; font-size: 24px; letter-spacing: 2px; }
+          .content { padding: 25px; }
+          .section-title { color: #562D2E; font-size: 14px; font-weight: bold; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid #8C1D19; display: inline-block; }
+          .journey-section, .passenger-section, .ticket-code-section { margin-bottom: 20px; }
+          .journey-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+          .station { text-align: center; }
+          .station .name { font-size: 18px; font-weight: bold; color: #562D2E; }
+          .station .code { font-size: 11px; color: #8C1D19; margin-top: 4px; }
+          .arrow { font-size: 24px; color: #8C1D19; }
+          .journey-details { display: flex; justify-content: space-between; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #8C1D19; }
+          .detail-item { text-align: center; flex: 1; }
+          .detail-item .label { font-size: 11px; color: #8C1D19; display: block; margin-bottom: 5px; }
+          .detail-item .value { font-size: 14px; font-weight: bold; color: #562D2E; }
+          .info-row { display: flex; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #eee; }
+          .info-row .label { width: 100px; font-size: 12px; color: #8C1D19; font-weight: 500; }
+          .info-row .value { flex: 1; font-size: 13px; color: #562D2E; font-weight: 500; }
+          .ticket-code-section { text-align: center; background: #FDF2D6; border-radius: 12px; padding: 20px; }
+          .code { font-size: 18px; font-weight: bold; color: #8C1D19; margin-bottom: 10px; }
+          .qr-placeholder { display: inline-block; background: white; padding: 10px; border-radius: 12px; margin-bottom: 10px; }
+          .qr-placeholder svg { width: 100px; height: 100px; }
+          .footer { background: #562D2E; padding: 15px; text-align: center; }
+          .footer p { color: #FDF2D6; font-size: 11px; margin: 3px 0; }
+          .thanks { font-weight: bold; margin-bottom: 8px; }
+        </style>
+      </head>
+      <body>
+        <div class="boarding-pass">
+          <div class="header"><h1>KLN TRAIN</h1></div>
+          <div class="content">
+            <div class="journey-section">
+              <div class="section-title">THÔNG TIN HÀNH TRÌNH</div>
+              <div class="journey-info">
+                <div class="station"><div class="name">${ticket.ga_len || '---'}</div><div class="code">GA ĐI</div></div>
+                <div class="arrow">→</div>
+                <div class="station"><div class="name">${ticket.ga_xuong || '---'}</div><div class="code">GA ĐẾN</div></div>
               </div>
-              <div class="arrow">→</div>
-              <div class="station">
-                <div class="name">${ticket.ga_xuong || '---'}</div>
-                <div class="code">GA ĐẾN</div>
+              <div class="journey-details">
+                <div class="detail-item"><span class="label">TÀU</span><span class="value">${ticket.chuyen_tau || '---'}</span></div>
+                <div class="detail-item"><span class="label">NGÀY ĐI</span><span class="value">${formatDate(ticket.ngay_di)}</span></div>
+                <div class="detail-item"><span class="label">GIỜ ĐI</span><span class="value">${ticket.gio_di || '06:00'}</span></div>
+                <div class="detail-item"><span class="label">TOA</span><span class="value">${ticket.so_toa || '1'}</span></div>
+                <div class="detail-item"><span class="label">GHẾ</span><span class="value">${ticket.so_ghe || '---'}</span></div>
               </div>
             </div>
-            <div class="journey-details">
-              <div class="detail-item">
-                <span class="label">TÀU</span>
-                <span class="value">${ticket.chuyen_tau || '---'}</span>
+            <div class="passenger-section">
+              <div class="section-title">THÔNG TIN HÀNH KHÁCH</div>
+              <div class="info-row"><div class="label">Họ tên:</div><div class="value">${ticket.hanh_khach || '---'}</div></div>
+              <div class="info-row"><div class="label">Giá vé:</div><div class="value">${formatCurrency(ticket.gia_ve)}</div></div>
+            </div>
+            <div class="ticket-code-section">
+              <div class="section-title">MÃ ĐẶT CHỖ & MÃ VÉ</div>
+              <div class="code">Mã đặt chỗ: ${bookingCode}</div>
+              <div class="code">Mã vé: ${ticket.ma_ve}</div>
+              <div class="qr-placeholder">
+                <svg viewBox="0 0 100 100">
+                  <rect width="100" height="100" fill="#562D2E"/>
+                  <rect x="5" y="5" width="20" height="20" fill="none" stroke="#FDF2D6" stroke-width="3"/>
+                  <rect x="10" y="10" width="10" height="10" fill="#FDF2D6"/>
+                  <rect x="75" y="5" width="20" height="20" fill="none" stroke="#FDF2D6" stroke-width="3"/>
+                  <rect x="80" y="10" width="10" height="10" fill="#FDF2D6"/>
+                  <rect x="5" y="75" width="20" height="20" fill="none" stroke="#FDF2D6" stroke-width="3"/>
+                  <rect x="10" y="80" width="10" height="10" fill="#FDF2D6"/>
+                </svg>
               </div>
-              <div class="detail-item">
-                <span class="label">NGÀY ĐI</span>
-                <span class="value">${formatDate(ticket.ngay_di)}</span>
-              </div>
-              <div class="detail-item">
-                <span class="label">GIỜ ĐI</span>
-                <span class="value">${ticket.gio_di || '06:00'}</span>
-              </div>
-              <div class="detail-item">
-                <span class="label">TOA</span>
-                <span class="value">${ticket.so_toa || '1'}</span>
-              </div>
-              <div class="detail-item">
-                <span class="label">GHẾ</span>
-                <span class="value">${ticket.so_ghe || '---'}</span>
-              </div>
+              <p class="qr-note">📱 Quét mã QR khi lên tàu</p>
             </div>
           </div>
-          
-          <!-- Thông tin hành khách -->
-          <div class="passenger-section">
-            <div class="section-title">THÔNG TIN HÀNH KHÁCH</div>
-            <div class="info-row">
-              <div class="label">Họ tên:</div>
-              <div class="value">${ticket.hanh_khach || '---'}</div>
-            </div>
-            <div class="info-row">
-              <div class="label">Loại vé:</div>
-              <div class="value">Toàn vé</div>
-            </div>
-            <div class="info-row">
-              <div class="label">Giá vé:</div>
-              <div class="value">${formatCurrency(ticket.gia_ve)}</div>
-            </div>
-          </div>
-          
-          <!-- Mã vé và QR -->
-          <div class="ticket-code-section">
-            <div class="section-title">MÃ ĐẶT CHỖ & MÃ VÉ</div>
-            <div class="code">Mã đặt chỗ: ${bookingCode}</div>
-            <div class="code">Mã vé: ${ticket.ma_ve}</div>
-            
-            <div class="qr-placeholder">
-              <svg viewBox="0 0 100 100">
-                <rect width="100" height="100" fill="#562D2E"/>
-                <rect x="5" y="5" width="20" height="20" fill="none" stroke="#FDF2D6" stroke-width="3"/>
-                <rect x="10" y="10" width="10" height="10" fill="#FDF2D6"/>
-                <rect x="75" y="5" width="20" height="20" fill="none" stroke="#FDF2D6" stroke-width="3"/>
-                <rect x="80" y="10" width="10" height="10" fill="#FDF2D6"/>
-                <rect x="5" y="75" width="20" height="20" fill="none" stroke="#FDF2D6" stroke-width="3"/>
-                <rect x="10" y="80" width="10" height="10" fill="#FDF2D6"/>
-                ${Array.from({ length: 15 }, (_, i) => {
-                  const x = 30 + (i % 5) * 12;
-                  const y = 30 + Math.floor(i / 5) * 12;
-                  return `<rect x="${x}" y="${y}" width="6" height="6" fill="#FDF2D6" opacity="0.8"/>`;
-                }).join('')}
-              </svg>
-            </div>
-            <p class="qr-note"> Quét mã QR khi lên tàu</p>
+          <div class="footer">
+            <p class="thanks">CẢM ƠN QUÝ KHÁCH ĐÃ SỬ DỤNG DỊCH VỤ</p>
+            <p>Hotline: 1900 1234 | Email: support@klntrain.vn</p>
+            <p>Ngày xuất vé: ${currentDate} - ${currentTime}</p>
           </div>
         </div>
-        
-        <!-- Dotted line -->
-        <div class="dotted-line"></div>
-        
-        <!-- Footer -->
-        <div class="footer">
-          <p class="thanks">CẢM ƠN QUÝ KHÁCH ĐÃ SỬ DỤNG DỊCH VỤ</p>
-          <p>Kính chúc quý khách có một chuyến đi an toàn và vui vẻ!</p>
-          <p>Hotline: 1900 1234 | Email: support@klntrain.vn</p>
-          <p>Ngày xuất vé: ${currentDate} - ${currentTime}</p>
-        </div>
-      </div>
-    </body>
-    </html>
-  `);
-  printWindow.print();
-};
-
-  // Tạo mã QR giả (dùng cho hiển thị)
-  const generateQRCode = (ticketId) => {
-    // Tạo mã QR dạng SVG đơn giản dựa trên mã vé
-    const seed = ticketId.toString().split('').reduce((a, b) => a + b.charCodeAt(0), 0);
-    const patterns = [];
-    for (let i = 0; i < 5; i++) {
-      const x = ((seed + i * 7) % 80) + 10;
-      const y = ((seed + i * 13) % 80) + 10;
-      patterns.push({ x, y });
-    }
-    return patterns;
+      </body>
+      </html>
+    `);
+    printWindow.print();
   };
 
   const getStatusText = (status) => {
@@ -485,19 +239,14 @@ const handlePrintTicket = (ticket) => {
       hieu_luc: { text: 'Có hiệu lực', class: 'badge-success' },
       da_su_dung: { text: 'Đã sử dụng', class: 'badge-info' },
       da_huy: { text: 'Đã hủy', class: 'badge-danger' },
-      het_han: { text: 'Hết hạn', class: 'badge-warning' }
+      da_xac_nhan: { text: 'Đã xác nhận', class: 'badge-success' }
     };
     return statuses[status] || { text: status, class: 'badge-secondary' };
   };
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
-  };
-
-  // Thống kê số lượng vé
   const stats = {
     total: tickets.length,
-    hieu_luc: tickets.filter(t => t.trang_thai === 'hieu_luc').length,
+    hieu_luc: tickets.filter(t => t.trang_thai === 'hieu_luc' || t.trang_thai === 'da_xac_nhan').length,
     da_su_dung: tickets.filter(t => t.trang_thai === 'da_su_dung').length,
     da_huy: tickets.filter(t => t.trang_thai === 'da_huy').length
   };
@@ -507,6 +256,7 @@ const handlePrintTicket = (ticket) => {
     { title: 'Khách hàng', key: 'hanh_khach', width: '150px' },
     { title: 'Chuyến tàu', key: 'chuyen_tau', width: '80px' },
     { title: 'Hành trình', key: 'ga_len', width: '200px', render: (_, row) => `${row.ga_len} → ${row.ga_xuong}` },
+    { title: 'Ngày đi', key: 'ngay_di', width: '100px', render: (v) => formatDate(v) },
     { title: 'Giá vé', key: 'gia_ve', render: (v) => formatCurrency(v) },
     { title: 'Trạng thái', key: 'trang_thai', render: (v) => {
       const status = getStatusText(v);
@@ -517,22 +267,13 @@ const handlePrintTicket = (ticket) => {
       key: 'actions',
       render: (_, row) => (
         <div className="action-buttons">
-          <button className="btn-view" onClick={() => { setSelectedTicket(row); setShowDetailModal(true); }} title="Xem chi tiết">
-            <FiEye />
-          </button>
-          {row.trang_thai === 'hieu_luc' && (
+          <button className="btn-view" onClick={() => { setSelectedTicket(row); setShowDetailModal(true); }} title="Xem chi tiết"><FiEye /></button>
+          {(row.trang_thai === 'hieu_luc' || row.trang_thai === 'da_xac_nhan') && (
             <>
-              <button className="btn-confirm" onClick={() => handleConfirmTicket(row)} title="Xác nhận đã sử dụng">
-                <FiCheckCircle />
-              </button>
-              <button className="btn-cancel" onClick={() => handleCancelTicket(row)} title="Hủy vé">
-                <FiXCircle />
-              </button>
+              <button className="btn-cancel" onClick={() => handleCancelTicket(row)} title="Hủy vé"><FiXCircle /></button>
             </>
           )}
-          <button className="btn-print" onClick={() => handlePrintTicket(row)} title="In vé">
-            <FiPrinter />
-          </button>
+          <button className="btn-print" onClick={() => handlePrintTicket(row)} title="In vé"><FiPrinter /></button>
         </div>
       )
     }
@@ -559,171 +300,50 @@ const handlePrintTicket = (ticket) => {
         </button>
       </div>
 
-      {/* Thống kê nhanh */}
       <div className="stats-summary">
-        <div className="stat-box primary">
-          <span className="stat-label">Tổng số vé</span>
-          <span className="stat-value">{stats.total}</span>
-        </div>
-        <div className="stat-box success">
-          <span className="stat-label">Có hiệu lực</span>
-          <span className="stat-value">{stats.hieu_luc}</span>
-        </div>
-        <div className="stat-box info">
-          <span className="stat-label">Đã sử dụng</span>
-          <span className="stat-value">{stats.da_su_dung}</span>
-        </div>
-        <div className="stat-box danger">
-          <span className="stat-label">Đã hủy</span>
-          <span className="stat-value">{stats.da_huy}</span>
-        </div>
+        <div className="stat-box primary"><span className="stat-label">Tổng số vé</span><span className="stat-value">{stats.total}</span></div>
+        <div className="stat-box success"><span className="stat-label">Có hiệu lực</span><span className="stat-value">{stats.hieu_luc}</span></div>
+        <div className="stat-box info"><span className="stat-label">Đã sử dụng</span><span className="stat-value">{stats.da_su_dung}</span></div>
+        <div className="stat-box danger"><span className="stat-label">Đã hủy</span><span className="stat-value">{stats.da_huy}</span></div>
       </div>
 
-      {/* Filter bar */}
       <div className="filter-bar">
-        <div className="search-input">
-          <FiSearch />
-          <input 
-            type="text" 
-            placeholder="Tìm kiếm theo mã vé, tên KH..." 
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-        <div className="filter-group">
-          <FiFilter />
-          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-            <option value="all">Tất cả trạng thái</option>
-            <option value="hieu_luc">Có hiệu lực</option>
-            <option value="da_su_dung">Đã sử dụng</option>
-            <option value="da_huy">Đã hủy</option>
-          </select>
-        </div>
+        <div className="search-input"><FiSearch /><input type="text" placeholder="Tìm kiếm theo mã vé, tên KH..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} /></div>
+        <div className="filter-group"><FiFilter /><select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+          <option value="all">Tất cả trạng thái</option>
+          <option value="hieu_luc">Có hiệu lực</option>
+          <option value="da_su_dung">Đã sử dụng</option>
+          <option value="da_huy">Đã hủy</option>
+        </select></div>
       </div>
 
-      {/* Data Table */}
       <DataTable columns={columns} data={filteredTickets} />
 
-      {/* Confirm Dialog */}
-      <ConfirmDialog 
-        isOpen={showConfirmDialog} 
-        onClose={() => setShowConfirmDialog(false)} 
-        onConfirm={actionType === 'confirm' ? processConfirmTicket : processCancelTicket} 
-        title={actionType === 'confirm' ? 'Xác nhận vé' : 'Hủy vé'} 
-        message={actionType === 'confirm' ? `Xác nhận vé ${selectedTicket?.ma_ve} đã được sử dụng?` : `Bạn có chắc chắn muốn hủy vé ${selectedTicket?.ma_ve}?`} 
-        confirmText={actionType === 'confirm' ? 'Xác nhận' : 'Hủy vé'} 
-        cancelText="Quay lại" 
-      />
+      <ConfirmDialog isOpen={showConfirmDialog} onClose={() => setShowConfirmDialog(false)} onConfirm={actionType === 'confirm' ? processConfirmTicket : processCancelTicket} title={actionType === 'confirm' ? 'Xác nhận vé' : 'Hủy vé'} message={actionType === 'confirm' ? `Xác nhận vé ${selectedTicket?.ma_ve} đã được sử dụng?` : `Bạn có chắc chắn muốn hủy vé ${selectedTicket?.ma_ve}?`} confirmText={actionType === 'confirm' ? 'Xác nhận' : 'Hủy vé'} cancelText="Quay lại" />
 
-      {/* Ticket Detail Modal with QR Code */}
       <Modal isOpen={showDetailModal} onClose={() => setShowDetailModal(false)} title="Chi tiết vé" size="md">
         {selectedTicket && (
           <div className="ticket-detail">
             <div className="ticket-header">
-              <div className="ticket-code">
-                <span>Mã vé</span>
-                <h2>{selectedTicket.ma_ve}</h2>
-              </div>
-              <div className={`ticket-status ${getStatusText(selectedTicket.trang_thai).class}`}>
-                {getStatusText(selectedTicket.trang_thai).text}
-              </div>
+              <div className="ticket-code"><span>Mã vé</span><h2>{selectedTicket.ma_ve}</h2></div>
+              <div className={`ticket-status ${getStatusText(selectedTicket.trang_thai).class}`}>{getStatusText(selectedTicket.trang_thai).text}</div>
             </div>
-            
             <div className="ticket-info">
-              <div className="info-row">
-                <span className="label">Khách hàng:</span>
-                <span className="value">{selectedTicket.hanh_khach}</span>
-              </div>
-              <div className="info-row">
-                <span className="label">Chuyến tàu:</span>
-                <span className="value">{selectedTicket.chuyen_tau}</span>
-              </div>
-              <div className="info-row">
-                <span className="label">Ngày khởi hành:</span>
-                <span className="value">{selectedTicket.ngay_di || '---'}</span>
-              </div>
-              <div className="info-row">
-                <span className="label">Ga lên tàu:</span>
-                <span className="value">{selectedTicket.ga_len}</span>
-              </div>
-              <div className="info-row">
-                <span className="label">Ga xuống tàu:</span>
-                <span className="value">{selectedTicket.ga_xuong}</span>
-              </div>
-              <div className="info-row">
-                <span className="label">Loại ghế:</span>
-                <span className="value">{selectedTicket.loai_ghe || '---'}</span>
-              </div>
-              <div className="info-row">
-                <span className="label">Vị trí ghế:</span>
-                <span className="value">{selectedTicket.so_ghe || '---'}</span>
-              </div>
-              <div className="info-row">
-                <span className="label">Giá vé:</span>
-                <span className="value price">{formatCurrency(selectedTicket.gia_ve)}</span>
-              </div>
-              <div className="info-row">
-                <span className="label">Ngày đặt:</span>
-                <span className="value">{selectedTicket.ngay_dat || selectedTicket.ngay_xuat_ve?.split('T')[0]}</span>
-              </div>
+              <div className="info-row"><span className="label">Khách hàng:</span><span className="value">{selectedTicket.hanh_khach}</span></div>
+              <div className="info-row"><span className="label">Chuyến tàu:</span><span className="value">{selectedTicket.chuyen_tau}</span></div>
+              <div className="info-row"><span className="label">Ngày khởi hành:</span><span className="value">{formatDate(selectedTicket.ngay_di)}</span></div>
+              <div className="info-row"><span className="label">Ga lên tàu:</span><span className="value">{selectedTicket.ga_len}</span></div>
+              <div className="info-row"><span className="label">Ga xuống tàu:</span><span className="value">{selectedTicket.ga_xuong}</span></div>
+              <div className="info-row"><span className="label">Toa:</span><span className="value">{selectedTicket.so_toa || '---'}</span></div>
+              <div className="info-row"><span className="label">Ghế:</span><span className="value">{selectedTicket.so_ghe || '---'}</span></div>
+              <div className="info-row"><span className="label">Loại ghế:</span><span className="value">{selectedTicket.loai_ghe || 'Ghế ngồi điều hòa'}</span></div>
+              <div className="info-row"><span className="label">Giá vé:</span><span className="value price">{formatCurrency(selectedTicket.gia_ve)}</span></div>
             </div>
-
-            {/* QR Code Section */}
-            <div className="qr-code">
-              <div className="qr-placeholder">
-                <svg viewBox="0 0 100 100" width="120" height="120">
-                  <rect width="100" height="100" fill="#1a1a2e"/>
-                  {/* Tạo mã QR động dựa trên mã vé */}
-                  {generateQRCode(selectedTicket.ma_ve).map((pos, i) => (
-                    <g key={i}>
-                      <rect x={pos.x} y={pos.y} width="8" height="8" fill="#ffffff"/>
-                      <rect x={pos.x + 15} y={pos.y + 10} width="5" height="5" fill="#ffffff"/>
-                      <rect x={pos.x + 30} y={pos.y + 25} width="6" height="6" fill="#ffffff"/>
-                      <rect x={pos.x - 10} y={pos.y + 40} width="4" height="4" fill="#ffffff"/>
-                      <rect x={pos.x + 50} y={pos.y - 5} width="7" height="7" fill="#ffffff"/>
-                    </g>
-                  ))}
-                  {/* Góc trên trái */}
-                  <rect x="5" y="5" width="20" height="20" fill="none" stroke="#ffffff" strokeWidth="3"/>
-                  <rect x="10" y="10" width="10" height="10" fill="#ffffff"/>
-                  {/* Góc trên phải */}
-                  <rect x="75" y="5" width="20" height="20" fill="none" stroke="#ffffff" strokeWidth="3"/>
-                  <rect x="80" y="10" width="10" height="10" fill="#ffffff"/>
-                  {/* Góc dưới trái */}
-                  <rect x="5" y="75" width="20" height="20" fill="none" stroke="#ffffff" strokeWidth="3"/>
-                  <rect x="10" y="80" width="10" height="10" fill="#ffffff"/>
-                </svg>
-              </div>
-              <p>Quét mã QR khi lên tàu</p>
-            </div>
-
-            {/* Action buttons in modal */}
-            {selectedTicket.trang_thai === 'hieu_luc' && (
+            {(selectedTicket.trang_thai === 'hieu_luc' || selectedTicket.trang_thai === 'da_xac_nhan') && (
               <div className="modal-actions">
-                <button 
-                  className="btn-confirm" 
-                  onClick={() => {
-                    setShowDetailModal(false);
-                    handleConfirmTicket(selectedTicket);
-                  }}
-                >
-                  <FiCheckCircle /> Xác nhận đã sử dụng
-                </button>
-                <button 
-                  className="btn-cancel" 
-                  onClick={() => {
-                    setShowDetailModal(false);
-                    handleCancelTicket(selectedTicket);
-                  }}
-                >
-                  <FiXCircle /> Hủy vé
-                </button>
-                <button 
-                  className="btn-print" 
-                  onClick={() => handlePrintTicket(selectedTicket)}
-                >
-                  <FiPrinter /> In vé
-                </button>
+                <button className="btn-confirm" onClick={() => { setShowDetailModal(false); handleConfirmTicket(selectedTicket); }}><FiCheckCircle /> Xác nhận</button>
+                <button className="btn-cancel" onClick={() => { setShowDetailModal(false); handleCancelTicket(selectedTicket); }}><FiXCircle /> Hủy vé</button>
+                <button className="btn-print" onClick={() => handlePrintTicket(selectedTicket)}><FiPrinter /> In vé</button>
               </div>
             )}
           </div>

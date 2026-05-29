@@ -27,6 +27,7 @@ app.use('/api/coupons', require('./routes/coupons.routes'));
 app.use('/api/refunds', require('./routes/refunds.routes'));
 app.use('/api/reports', require('./routes/reports.routes'));
 app.use('/api/notifications', require('./routes/notifications.routes'));
+app.use('/api/tickets', require('./routes/ticket.routes'));
 
 
 // Test route
@@ -44,4 +45,27 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
   console.log(`📌 Test login: POST http://localhost:${PORT}/api/auth/login`);
+});
+
+// Chạy mỗi giờ để cập nhật vé đã qua giờ
+const cron = require('node-cron');
+const { executeQuery } = require('./config/db');
+
+cron.schedule('0 * * * *', async () => {
+  console.log(' Đang cập nhật trạng thái vé tự động...');
+  try {
+    const result = await executeQuery(`
+      UPDATE Ve 
+      SET trang_thai = 'da_su_dung' 
+      WHERE trang_thai IN ('hieu_luc', 'da_xac_nhan')
+        AND EXISTS (
+          SELECT 1 FROM ChuyenTau ct 
+          WHERE ct.id_chuyen = Ve.id_chuyen 
+            AND ct.ngay_chay < GETDATE()
+        )
+    `);
+    console.log(` Đã cập nhật ${result.rowsAffected?.[0] || 0} vé`);
+  } catch (error) {
+    console.error(' Lỗi cập nhật tự động:', error);
+  }
 });

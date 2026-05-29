@@ -46,8 +46,8 @@ export const dashboardAPI = {
 export const ticketAPI = {
   getAll: () => api.get('/tickets'),
   getById: (id) => api.get(`/tickets/${id}`),
-  confirm: (id) => api.put(`/tickets/${id}/confirm`),
   cancel: (id, data) => api.put(`/tickets/${id}/cancel`, data),
+  autoUpdateStatus: (id) => api.put(`/tickets/${id}/auto-update`),
   getStats: () => api.get('/tickets/stats')
 };
 
@@ -118,7 +118,7 @@ export const couponAPI = {
 
 // ==================== REFUND API ====================
 export const refundAPI = {
-  getAll: (params) => api.get('/refunds', { params }),
+  getAll: (params) => api.get('/refunds'),
   getStats: () => api.get('/refunds/stats'),
   getById: (id) => api.get(`/refunds/${id}`),
   confirm: (id) => api.put(`/refunds/${id}/confirm`),

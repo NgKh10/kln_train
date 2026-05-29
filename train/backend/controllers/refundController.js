@@ -1,20 +1,34 @@
-const { executeQuery, executeProcedure } = require('../config/db');
+const { executeQuery } = require('../config/db');
 
-// Lấy danh sách yêu cầu hoàn tiền
+// Lấy danh sách hoàn tiền
 exports.getAllRefunds = async (req, res) => {
   try {
     const result = await executeQuery(`
-      SELECT h.id_hoan, v.id_ve, tk.ho_ten, v.gia_ve AS tien_goc,
-             h.phi_huy, h.tien_hoan, h.ly_do, h.trang_thai_hoan, h.thoi_gian_hoan,
-             d.ma_don
+      SELECT 
+        h.id_hoan,
+        h.id_ve,
+        h.tien_goc,
+        h.phi_huy,
+        h.tien_hoan,
+        h.ly_do,
+        h.trang_thai_hoan,
+        h.thoi_gian_hoan,
+        tk.ho_ten,
+        t.so_hieu,
+        v.ngay_xuat_ve
       FROM HoanTien h
       JOIN Ve v ON v.id_ve = h.id_ve
       JOIN DonDatVe d ON d.id_don_dat_ve = v.id_don_dat_ve
       JOIN TaiKhoan tk ON tk.id_tai_khoan = d.id_tai_khoan
+      JOIN ChuyenTau ct ON ct.id_chuyen = v.id_chuyen
+      JOIN LichChay lc ON lc.id_lich_chay = ct.id_lich_chay
+      JOIN Tau t ON t.id_tau = lc.id_tau
       ORDER BY h.thoi_gian_hoan DESC
     `);
+    
     res.json({ success: true, data: result.recordset });
   } catch (error) {
+    console.error('Lỗi lấy hoàn tiền:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -25,24 +39,14 @@ exports.confirmRefund = async (req, res) => {
   
   try {
     await executeQuery(`
-      UPDATE HoanTien SET trang_thai_hoan = 'hoan_thanh', thoi_gian_hoan_xong = GETDATE()
+      UPDATE HoanTien 
+      SET trang_thai_hoan = 'hoan_thanh', thoi_gian_hoan_xong = GETDATE()
       WHERE id_hoan = @id
     `, { id });
     
-    // Ghi log audit
-    await executeQuery(`
-      INSERT INTO AuditLog (bang, ma_ban_ghi, hanh_dong, gia_tri_moi, id_tai_khoan, ip_address, user_agent, thoi_gian)
-      VALUES ('HoanTien', @id, 'UPDATE', @gia_tri_moi, @id_tai_khoan, @ip, @user_agent, GETDATE())
-    `, {
-      id,
-      gia_tri_moi: JSON.stringify({ trang_thai_hoan: 'hoan_thanh' }),
-      id_tai_khoan: req.user.id_tai_khoan,
-      ip: req.ip,
-      user_agent: req.headers['user-agent']
-    });
-    
     res.json({ success: true, message: 'Xác nhận hoàn tiền thành công' });
   } catch (error) {
+    console.error('Lỗi xác nhận hoàn tiền:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -50,16 +54,17 @@ exports.confirmRefund = async (req, res) => {
 // Từ chối hoàn tiền
 exports.rejectRefund = async (req, res) => {
   const { id } = req.params;
-  const { ly_do_tu_choi } = req.body;
   
   try {
     await executeQuery(`
-      UPDATE HoanTien SET trang_thai_hoan = 'that_bai'
+      UPDATE HoanTien 
+      SET trang_thai_hoan = 'that_bai'
       WHERE id_hoan = @id
     `, { id });
     
-    res.json({ success: true, message: 'Đã từ chối hoàn tiền' });
+    res.json({ success: true, message: 'Từ chối hoàn tiền thành công' });
   } catch (error) {
+    console.error('Lỗi từ chối hoàn tiền:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -69,15 +74,17 @@ exports.getRefundStats = async (req, res) => {
   try {
     const result = await executeQuery(`
       SELECT 
-        COUNT(*) AS tong_yc,
-        SUM(CASE WHEN trang_thai_hoan = 'cho_xu_ly' THEN 1 ELSE 0 END) AS cho_xu_ly,
-        SUM(CASE WHEN trang_thai_hoan = 'hoan_thanh' THEN 1 ELSE 0 END) AS hoan_thanh,
-        SUM(CASE WHEN trang_thai_hoan = 'that_bai' THEN 1 ELSE 0 END) AS that_bai,
-        SUM(CASE WHEN trang_thai_hoan = 'hoan_thanh' THEN tien_hoan ELSE 0 END) AS tong_tien_da_hoan
+        COUNT(*) AS total,
+        SUM(CASE WHEN trang_thai_hoan = 'cho_xu_ly' THEN 1 ELSE 0 END) AS pending,
+        SUM(CASE WHEN trang_thai_hoan = 'hoan_thanh' THEN 1 ELSE 0 END) AS completed,
+        SUM(CASE WHEN trang_thai_hoan = 'that_bai' THEN 1 ELSE 0 END) AS rejected,
+        SUM(CASE WHEN trang_thai_hoan = 'hoan_thanh' THEN tien_hoan ELSE 0 END) AS total_refunded
       FROM HoanTien
     `);
+    
     res.json({ success: true, data: result.recordset[0] });
   } catch (error) {
+    console.error('Lỗi thống kê hoàn tiền:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
