@@ -2,6 +2,12 @@
 .refunds-page {
   .page-header {
     margin-bottom: 24px;
+    .page-title {
+      font-size: 24px;
+      color: $dark;
+      margin-bottom: 4px;
+    }
+    
   }
   
   .stats-summary {
@@ -166,7 +172,7 @@
         gap: 8px;
         
         &.btn-secondary {
-          background: $gray;
+          background: $gray; 
           color: white;
           
           &:hover {
@@ -225,6 +231,18 @@
         background: rgba($info, 0.1);
         color: $info;
         &:hover { background: $info; color: white; }
+      }
+
+      &.btn-confirm{
+        background: rgba($success, 0.1);
+        color: $success;
+        &:hover { background: $success; color: white;}
+      }
+
+      &.btn-reject{
+        background: rgba($danger, 0.1);
+        color: $danger;
+        &:hover { background: $danger; color: white;}
       }
     }
   }

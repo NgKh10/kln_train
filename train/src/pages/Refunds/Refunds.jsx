@@ -129,7 +129,7 @@ const Refunds = () => {
   const columns = [
     { title: 'Mã vé', key: 'ma_ve', width: '80px' },
     { title: 'Khách hàng', key: 'khach_hang', width: '150px' },
-    { title: 'Chuyến tàu', key: 'chuyen_tau', width: '80px' },
+    { title: 'Chuyến tàu', key: 'chuyen_tau', width: '115px' },
     { title: 'Ngày hủy', key: 'ngay_huy', width: '100px' },
     { title: 'Tiền gốc', key: 'tien_goc', render: (v) => formatCurrency(v) },
     { title: 'Phí hủy', key: 'phi_huy', render: (v) => formatCurrency(v) },
@@ -180,7 +180,6 @@ const Refunds = () => {
       <div className="page-header">
         <div>
           <h1 className="page-title">Quản lý hủy vé & hoàn tiền</h1>
-          <p className="page-subtitle">Quản lý các yêu cầu hủy vé và hoàn tiền từ khách hàng</p>
         </div>
       </div>
 

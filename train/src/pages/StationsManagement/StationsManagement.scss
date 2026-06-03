@@ -15,7 +15,7 @@
       margin-bottom: 4px;
     }
     
-    .page-subtitle {
+    .page-subtitle { 
       color: $gray;
       font-size: 14px;
     }
@@ -145,7 +145,8 @@
   
   // Action buttons
   .action-buttons {
-    display: flex;
+    display:flex;
+    justify-content: left;
     gap: 8px;
     
     button {

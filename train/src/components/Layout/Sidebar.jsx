@@ -66,12 +66,7 @@ const Sidebar = ({ collapsed, toggleCollapse, mobileOpen }) => {
               <span className="smallText">Quản lý thanh toán</span>
             </NavLink>
           </li>
-          <li className="listItem">
-            <NavLink to="/coupons" className={({ isActive }) => `menuLink flex ${isActive ? 'active' : ''}`}>
-              <FiPercent className='icon' />
-              <span className="smallText">Mã giảm giá</span>
-            </NavLink>
-          </li>
+          
         </ul>
       </div>
 
@@ -117,15 +112,15 @@ const Sidebar = ({ collapsed, toggleCollapse, mobileOpen }) => {
         <h3 className="divTitle">CHÍNH SÁCH & GIÁ</h3>
         <ul className="menuLists grid">
           <li className="listItem">
-            <NavLink to="/price-policies" className={({ isActive }) => `menuLink flex ${isActive ? 'active' : ''}`}>
-              <FiDollarSign className='icon' />
-              <span className="smallText">Biểu giá</span>
-            </NavLink>
-          </li>
-          <li className="listItem">
             <NavLink to="/policies" className={({ isActive }) => `menuLink flex ${isActive ? 'active' : ''}`}>
               <BiTrendingUp className='icon' />
               <span className="smallText">Chính sách giá</span>
+            </NavLink>
+          </li>
+          <li className="listItem">
+            <NavLink to="/coupons" className={({ isActive }) => `menuLink flex ${isActive ? 'active' : ''}`}>
+              <FiPercent className='icon' />
+              <span className="smallText">Mã giảm giá</span>
             </NavLink>
           </li>
         </ul>

@@ -13,6 +13,7 @@ import StationsManagement from './pages/StationsManagement/StationsManagement';
 import SchedulesManagement from './pages/SchedulesManagement/SchedulesManagement';
 import CustomersManagement from './pages/CustomersManagement/CustomersManagement';
 import PaymentsManagement from './pages/PaymentsManagement/PaymentsManagement';
+import SeatTypesManagement from './pages/SeatTypesManagement/SeatTypesManagement';
 import Reports from './pages/Reports/Reports';
 import Policies from './pages/Policies/Policies';
 import Refunds from './pages/Refunds/Refunds';
@@ -36,6 +37,7 @@ function App() {
             <Route path="tickets" element={<TicketsManagement />} />
             <Route path="trains" element={<TrainsManagement />} />
             <Route path="stations" element={<StationsManagement />} />
+            <Route path="seat-types" element={<SeatTypesManagement />} />
             <Route path="schedules" element={<SchedulesManagement />} />
             <Route path="customers" element={<CustomersManagement />} />
             <Route path="payments" element={<PaymentsManagement />} />

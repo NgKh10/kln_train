@@ -120,11 +120,11 @@ const StationsManagement = () => {
   );
 
   const columns = [
-    { title: 'Mã ga', key: 'ma_ga_viet_tat', width: '80px' },
-    { title: 'Tên ga', key: 'ten_ga', width: '200px' },
+    { title: 'Mã ga', key: 'ma_ga_viet_tat', width: '90px' },
+    { title: 'Tên ga', key: 'ten_ga', width: '220px' },
     { title: 'Tỉnh/Thành', key: 'tinh_thanh', width: '150px' },
-    { title: 'Thứ tự', key: 'thu_tu_tuyen', width: '70px' },
-    { title: 'Độ ưu tiên', key: 'do_uu_tien', render: (v) => getUuTienText(v) },
+    { title: 'Thứ tự', key: 'thu_tu_tuyen', width: '80px' },
+    { title: 'Độ ưu tiên', key: 'do_uu_tien',width: '100px', render: (v) => getUuTienText(v) },
     { 
       title: 'Trạng thái', 
       key: 'trang_thai',

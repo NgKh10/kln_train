@@ -136,18 +136,6 @@ export const reportAPI = {
   getCouponEffectiveness: () => api.get('/reports/coupon-effectiveness')
 };
 
-// ==================== PRICE POLICY API ====================
-export const priceAPI = {
-  getPricePolicies: () => api.get('/prices/policies'),
-  createPricePolicy: (data) => api.post('/prices/policies', data),
-  updatePricePolicy: (id, data) => api.put(`/prices/policies/${id}`, data),
-  deletePricePolicy: (id) => api.delete(`/prices/policies/${id}`),
-  getCustomerPolicies: () => api.get('/prices/customer-policies'),
-  updateCustomerPolicy: (id, data) => api.put(`/prices/customer-policies/${id}`, data),
-  getCancelPolicies: () => api.get('/prices/cancel-policies'),
-  updateCancelPolicy: (id, data) => api.put(`/prices/cancel-policies/${id}`, data)
-};
-
 // ==================== NOTIFICATION API ====================
 export const notificationAPI = {
   getAll: (params) => api.get('/notifications', { params }),
@@ -191,14 +179,15 @@ export const seatTypeAPI = {
   configure: (carriageTypeId, data) => api.post(`/seats/carriage-types/${carriageTypeId}/configure`, data)
 };
 
-// ==================== POLICY API ====================
+// Policy API
 export const policyAPI = {
   getCustomerDiscounts: () => api.get('/policies/customer-discounts'),
   updateCustomerDiscount: (id, data) => api.put(`/policies/customer-discounts/${id}`, data),
   getCancelFees: () => api.get('/policies/cancel-fees'),
   updateCancelFee: (id, data) => api.put(`/policies/cancel-fees/${id}`, data),
+  getOccasionPolicies: () => api.get('/policies/occasion-policies'),
+  updateOccasionPolicy: (id, data) => api.put(`/policies/occasion-policies/${id}`, data),
   getBasePrice: () => api.get('/policies/base-price'),
-  updateBasePrice: (data) => api.put('/policies/base-price', data)
+  getSeatFactors: () => api.get('/policies/seat-factors')
 };
-
 export default api;

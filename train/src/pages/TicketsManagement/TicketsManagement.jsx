@@ -146,90 +146,219 @@ const loadTickets = async () => {
     const printWindow = window.open('', '_blank');
     printWindow.document.write(`
       <!DOCTYPE html>
-      <html>
-      <head>
-        <title>Vé tàu ${ticket.ma_ve} - KNL TRAIN</title>
-        <meta charset="UTF-8">
-        <style>
-          * { margin: 0; padding: 0; box-sizing: border-box; }
-          body { font-family: 'Segoe UI', Arial, sans-serif; background: #FDF2D6; padding: 40px 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-          .boarding-pass { max-width: 550px; width: 100%; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
-          .header { background: #8C1D19; padding: 20px; text-align: center; }
-          .header h1 { color: #FDF2D6; font-size: 24px; letter-spacing: 2px; }
-          .content { padding: 25px; }
-          .section-title { color: #562D2E; font-size: 14px; font-weight: bold; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid #8C1D19; display: inline-block; }
-          .journey-section, .passenger-section, .ticket-code-section { margin-bottom: 20px; }
-          .journey-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-          .station { text-align: center; }
-          .station .name { font-size: 18px; font-weight: bold; color: #562D2E; }
-          .station .code { font-size: 11px; color: #8C1D19; margin-top: 4px; }
-          .arrow { font-size: 24px; color: #8C1D19; }
-          .journey-details { display: flex; justify-content: space-between; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #8C1D19; }
-          .detail-item { text-align: center; flex: 1; }
-          .detail-item .label { font-size: 11px; color: #8C1D19; display: block; margin-bottom: 5px; }
-          .detail-item .value { font-size: 14px; font-weight: bold; color: #562D2E; }
-          .info-row { display: flex; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #eee; }
-          .info-row .label { width: 100px; font-size: 12px; color: #8C1D19; font-weight: 500; }
-          .info-row .value { flex: 1; font-size: 13px; color: #562D2E; font-weight: 500; }
-          .ticket-code-section { text-align: center; background: #FDF2D6; border-radius: 12px; padding: 20px; }
-          .code { font-size: 18px; font-weight: bold; color: #8C1D19; margin-bottom: 10px; }
-          .qr-placeholder { display: inline-block; background: white; padding: 10px; border-radius: 12px; margin-bottom: 10px; }
-          .qr-placeholder svg { width: 100px; height: 100px; }
-          .footer { background: #562D2E; padding: 15px; text-align: center; }
-          .footer p { color: #FDF2D6; font-size: 11px; margin: 3px 0; }
-          .thanks { font-weight: bold; margin-bottom: 8px; }
-        </style>
-      </head>
-      <body>
-        <div class="boarding-pass">
-          <div class="header"><h1>KLN TRAIN</h1></div>
-          <div class="content">
-            <div class="journey-section">
-              <div class="section-title">THÔNG TIN HÀNH TRÌNH</div>
-              <div class="journey-info">
-                <div class="station"><div class="name">${ticket.ga_len || '---'}</div><div class="code">GA ĐI</div></div>
-                <div class="arrow">→</div>
-                <div class="station"><div class="name">${ticket.ga_xuong || '---'}</div><div class="code">GA ĐẾN</div></div>
-              </div>
-              <div class="journey-details">
-                <div class="detail-item"><span class="label">TÀU</span><span class="value">${ticket.chuyen_tau || '---'}</span></div>
-                <div class="detail-item"><span class="label">NGÀY ĐI</span><span class="value">${formatDate(ticket.ngay_di)}</span></div>
-                <div class="detail-item"><span class="label">GIỜ ĐI</span><span class="value">${ticket.gio_di || '06:00'}</span></div>
-                <div class="detail-item"><span class="label">TOA</span><span class="value">${ticket.so_toa || '1'}</span></div>
-                <div class="detail-item"><span class="label">GHẾ</span><span class="value">${ticket.so_ghe || '---'}</span></div>
-              </div>
-            </div>
-            <div class="passenger-section">
-              <div class="section-title">THÔNG TIN HÀNH KHÁCH</div>
-              <div class="info-row"><div class="label">Họ tên:</div><div class="value">${ticket.hanh_khach || '---'}</div></div>
-              <div class="info-row"><div class="label">Giá vé:</div><div class="value">${formatCurrency(ticket.gia_ve)}</div></div>
-            </div>
-            <div class="ticket-code-section">
-              <div class="section-title">MÃ ĐẶT CHỖ & MÃ VÉ</div>
-              <div class="code">Mã đặt chỗ: ${bookingCode}</div>
-              <div class="code">Mã vé: ${ticket.ma_ve}</div>
-              <div class="qr-placeholder">
-                <svg viewBox="0 0 100 100">
-                  <rect width="100" height="100" fill="#562D2E"/>
-                  <rect x="5" y="5" width="20" height="20" fill="none" stroke="#FDF2D6" stroke-width="3"/>
-                  <rect x="10" y="10" width="10" height="10" fill="#FDF2D6"/>
-                  <rect x="75" y="5" width="20" height="20" fill="none" stroke="#FDF2D6" stroke-width="3"/>
-                  <rect x="80" y="10" width="10" height="10" fill="#FDF2D6"/>
-                  <rect x="5" y="75" width="20" height="20" fill="none" stroke="#FDF2D6" stroke-width="3"/>
-                  <rect x="10" y="80" width="10" height="10" fill="#FDF2D6"/>
-                </svg>
-              </div>
-              <p class="qr-note">📱 Quét mã QR khi lên tàu</p>
-            </div>
-          </div>
-          <div class="footer">
-            <p class="thanks">CẢM ƠN QUÝ KHÁCH ĐÃ SỬ DỤNG DỊCH VỤ</p>
-            <p>Hotline: 1900 1234 | Email: support@klntrain.vn</p>
-            <p>Ngày xuất vé: ${currentDate} - ${currentTime}</p>
-          </div>
-        </div>
-      </body>
-      </html>
+<html>
+<head>
+  <title>Vé tàu SE8 - Đường sắt Hà Nội</title>
+  <meta charset="UTF-8">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #e9ecef;
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .boarding-pass {
+      max-width: 550px;
+      width: 100%;
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+    /* Header đỏ - giống ảnh */
+    .header {
+      background: #b12a2a;
+      padding: 16px 20px;
+      text-align: center;
+    }
+    .header h1 {
+      color: #ffefc0;
+      font-size: 22px;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+    .header .sub {
+      color: #ffefc0;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+    /* Nội dung chính */
+    .content {
+      padding: 20px 24px;
+    }
+    .ticket-id {
+      text-align: right;
+      font-size: 12px;
+      color: #b12a2a;
+      font-weight: bold;
+      margin-bottom: 16px;
+    }
+    /* Hàng trình 2 cột SÀI GÒN - HÀ NỘI */
+    .journey-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fef7e6;
+      padding: 12px 16px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+    .station-box {
+      text-align: center;
+      flex: 1;
+    }
+    .station-name {
+      font-size: 24px;
+      font-weight: 800;
+      color: #2c3e2f;
+      letter-spacing: 1px;
+    }
+    .station-name small {
+      font-size: 12px;
+      font-weight: normal;
+    }
+    .arrow-icon {
+      font-size: 28px;
+      color: #b12a2a;
+      font-weight: bold;
+      padding: 0 8px;
+    }
+    /* Thông tin chi tiết dạng lưới */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px 16px;
+      margin-bottom: 20px;
+    }
+    .info-item {
+      border-bottom: 1px dashed #ddd;
+      padding-bottom: 6px;
+    }
+    .info-label {
+      font-size: 11px;
+      color: #b12a2a;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .info-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1e2a1e;
+      margin-top: 2px;
+    }
+    /* Hàng ghế + loại vé đặc biệt */
+    .seat-class-row {
+      background: #f5f2eb;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin: 16px 0;
+      display: flex;
+      justify-content: space-between;
+    }
+    .full-width {
+      margin: 12px 0;
+    }
+    .price {
+      font-size: 18px;
+      font-weight: bold;
+      color: #b12a2a;
+    }
+    .note {
+      font-size: 11px;
+      color: #666;
+      margin-top: 12px;
+      text-align: center;
+      border-top: 1px solid #eee;
+      padding-top: 12px;
+    }
+    .invoice-link {
+      font-size: 11px;
+      background: #f5f2eb;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+      margin: 12px 0;
+      word-break: break-all;
+    }
+    .footer-print {
+      background: #2c2e2a;
+      padding: 12px;
+      text-align: center;
+      font-size: 10px;
+      color: #ccc;
+    }
+    hr {
+      margin: 12px 0;
+      border: none;
+      border-top: 1px dashed #b12a2a;
+    }
+  </style>
+</head>
+<body>
+<div class="boarding-pass">
+  <div class="header">
+    <h1>CÔNG TY CỔ PHẦN VẬN TẢI<br>ĐƯỜNG SẮT KLN</h1>
+    <div class="sub">THẺ LÊN TÀU HỎA / BOARDING PASS</div>
+  </div>
+  <div class="content">
+    <div class="ticket-id">Mã vé/TicketID: 90213282</div>
+
+    <!-- Ga đi - Ga đến dạng lớn như ảnh -->
+    <div class="journey-row">
+      <div class="station-box">
+        <div class="station-name">SÀI GÒN</div>
+      </div>
+      <div class="arrow-icon">→</div>
+      <div class="station-box">
+        <div class="station-name">HÀ NỘI</div>
+      </div>
+    </div>
+
+    <!-- Thông tin chuyến đi dạng 4 cột như ảnh gốc: Tàu, Ngày đi, Giờ đi, Toa, Chỗ... -->
+    <div class="info-grid">
+      <div class="info-item"><div class="info-label">Tàu/Train</div><div class="info-value">SE8</div></div>
+      <div class="info-item"><div class="info-label">Ngày đi/Date</div><div class="info-value">23/5/2026</div></div>
+      <div class="info-item"><div class="info-label">Giờ đi/Time</div><div class="info-value">06:00</div></div>
+      <div class="info-item"><div class="info-label">Toa/Coach</div><div class="info-value">2</div></div>
+      <div class="info-item"><div class="info-label">Chỗ/Seat</div><div class="info-value">41</div></div>
+      <div class="info-item"><div class="info-label">Loại chỗ/Class</div><div class="info-value">Ngồi mềm điều hòa</div></div>
+      <div class="info-item"><div class="info-label">Loại vé/Ticket</div><div class="info-value">Toàn vé</div></div>
+      <div class="info-item"><div class="info-label">Họ tên/Name</div><div class="info-value">NGUYỄN VĂN A</div></div>
+      <div class="info-item"><div class="info-label">Giấy tờ/Passport</div><div class="info-value">---</div></div>
+    </div>
+
+    <!-- Giá vé nổi bật -->
+    <div class="seat-class-row">
+      <span><strong>Giá/Price:</strong></span>
+      <span class="price">908.000 VNĐ</span>
+    </div>
+
+    <!-- Ghi chú hóa đơn điện tử giống ảnh -->
+    <div class="invoice-link">
+      📍 Ghi chú: Để tra cứu và nhận hóa đơn điện tử xin vui lòng truy cập<br>
+      http://hoadon.klntrain.vn<br>
+      <strong>Mã tra cứu hóa đơn: S2NFBIDF</strong>
+    </div>
+
+    <div class="note">
+      Thẻ này không có giá trị thanh toán.<br>
+      This boarding pass is not an official invoice.
+    </div>
+    <hr>
+    <div style="font-size: 10px; text-align: center; color:#666;">
+      HN010-5421302. Ngày in/Printed date: 24/5/2026 (1)
+    </div>
+  </div>
+  <div class="footer-print">
+    Hotline hỗ trợ: 1900 1234 | www.klntrain.vn
+  </div>
+</div>
+</body>
+</html>
     `);
     printWindow.print();
   };
@@ -239,7 +368,8 @@ const loadTickets = async () => {
       hieu_luc: { text: 'Có hiệu lực', class: 'badge-success' },
       da_su_dung: { text: 'Đã sử dụng', class: 'badge-info' },
       da_huy: { text: 'Đã hủy', class: 'badge-danger' },
-      da_xac_nhan: { text: 'Đã xác nhận', class: 'badge-success' }
+      da_xac_nhan: { text: 'Đã xác nhận', class: 'badge-success' },
+      cho_xac_nhan: { text: 'Chờ xác nhận', class: 'badge-warning' }
     };
     return statuses[status] || { text: status, class: 'badge-secondary' };
   };
@@ -248,13 +378,14 @@ const loadTickets = async () => {
     total: tickets.length,
     hieu_luc: tickets.filter(t => t.trang_thai === 'hieu_luc' || t.trang_thai === 'da_xac_nhan').length,
     da_su_dung: tickets.filter(t => t.trang_thai === 'da_su_dung').length,
-    da_huy: tickets.filter(t => t.trang_thai === 'da_huy').length
+    da_huy: tickets.filter(t => t.trang_thai === 'da_huy').length,
+    cho_xac_nhan: tickets.filter(t => t.trang_thai === 'cho_xac_nhan').length
   };
 
   const columns = [
     { title: 'Mã vé', key: 'ma_ve', width: '80px' },
     { title: 'Khách hàng', key: 'hanh_khach', width: '150px' },
-    { title: 'Chuyến tàu', key: 'chuyen_tau', width: '80px' },
+    { title: 'Chuyến tàu', key: 'chuyen_tau', width: '120px' },
     { title: 'Hành trình', key: 'ga_len', width: '200px', render: (_, row) => `${row.ga_len} → ${row.ga_xuong}` },
     { title: 'Ngày đi', key: 'ngay_di', width: '100px', render: (v) => formatDate(v) },
     { title: 'Giá vé', key: 'gia_ve', render: (v) => formatCurrency(v) },
@@ -293,7 +424,6 @@ const loadTickets = async () => {
       <div className="page-header">
         <div>
           <h1 className="page-title">Quản lý vé</h1>
-          <p className="page-subtitle">Quản lý toàn bộ vé đã bán, xác nhận vé, hủy vé</p>
         </div>
         <button className="btn-primary" onClick={() => window.location.href = '/reports'}>
           <FiDownload /> Xuất báo cáo

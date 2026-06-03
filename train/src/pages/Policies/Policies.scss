@@ -1,28 +1,22 @@
 @import '../../styles/variables';
-@import '../../styles/global.scss';
 .pol-page {
-  padding-bottom: 40px;
-
-  // ── Header ────────────────────────────────────────────────────────────────
-
-  .pol-page__header {
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 24px;
-  }
-
-  &__title {
-    font-size: 24px;
-    font-weight: 600;
-    color: $dark;
-    margin-bottom: 4px;
-  }
-
-  &__sub {
-    font-size: 14px;
-    color: $gray;
+    flex-wrap: wrap;
+    gap: 16px;
+    
+    .page-title {
+      font-size: 24px;
+      color: $dark;
+      margin-bottom: 4px;
+    }
   }
 }
 
-// ── Tabs ──────────────────────────────────────────────────────────────────────
+// ── Tabs ───────
 .pol-tabs {
   display: flex;
   gap: 8px;
@@ -62,7 +56,7 @@
     font-weight: 600;
   }
 }
-// ── Section ───────────────────────────────────────────────────────────────────
+// ── Section ───
 
 .pol-section {
   background: white;
@@ -78,8 +72,7 @@
   }
 }
 
-// ── Table ─────────────────────────────────────────────────────────────────────
-
+// ── Table ─
 .pol-table {
   width: 100%;
   border-collapse: collapse;
@@ -117,7 +110,7 @@
 .td--muted  { color: $gray; font-size: 13px; }
 .td--action { text-align: right; }
 
-// ── Numbers ───────────────────────────────────────────────────────────────────
+// ── Numbers ────
 
 .num {
   font-size: 14px;
@@ -128,7 +121,7 @@
   &--success { color: $success; }
 }
 
-// ── Badge — same convention as StationsManagement ─────────────────────────────
+// ── Badge — same convention as StationsManagement ────
 
 .badge {
   display: inline-flex;
@@ -144,7 +137,7 @@
   &-info    { background: rgba($info, 0.1);     color: darken($info, 10%); }
 }
 
-// ── Status indicator ──────────────────────────────────────────────────────────
+// ── Status indicator ───
 
 .status-dot {
   display: inline-block;
@@ -162,7 +155,7 @@
   vertical-align: middle;
 }
 
-// ── Action buttons — mirrors StationsManagement exactly ───────────────────────
+// ── Action buttons — mirrors StationsManagement exactly 
 
 .action-buttons {
   display: flex;
@@ -185,7 +178,7 @@
   }
 }
 
-// ── Inline edit ───────────────────────────────────────────────────────────────
+// ── Inline edit 
 
 .inline-edit {
   display: inline-flex;
@@ -217,38 +210,39 @@
   }
 }
 
-// ── Formula box ───────────────────────────────────────────────────────────────
-
-.formula-box {
-  background: lighten($light, 2%);
-  border: 1px solid $light;
-  border-radius: 10px;
-  padding: 14px 18px;
-  margin-bottom: 20px;
-
-  &__label {
-    display: block;
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: $gray;
-    margin-bottom: 6px;
-  }
-
-  &__text {
-    font-size: 14px;
-    color: $dark;
-    line-height: 1.6;
-
-    strong {
-      font-weight: 700;
-      color: $primary;
+// ── Formula box 
+ .formula-box {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 15px 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    border: 1px solid #f0f0f0;
+    
+    &__label {
+      font-size: 12px;
+      font-weight: 500;
+      color: #8b9eb0;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    
+    &__text {
+      font-size: 14px;
+      color: #4a5b6e;
+      line-height: 1.6;
+      margin: 0;
+      
+      strong {
+        color: #0066b3;
+        font-weight: 700;
+        font-size: 16px;
+      }
     }
   }
-}
 
-// ── Base price cards ──────────────────────────────────────────────────────────
+// ── Base price cards 
 
 .base-cards {
   display: grid;
@@ -256,33 +250,74 @@
   gap: 14px;
   margin-bottom: 8px;
 }
+.base-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 20px;
+}
 
 .base-card {
-  background: lighten($light, 2%);
-  border: 1px solid $light;
-  border-radius: 10px;
-  padding: 16px 18px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid #f0f0f0;
+  
+  &:first-child {
+    background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+  }
 
   &__label {
     font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: $gray;
-    margin-bottom: 6px;
+    font-weight: 500;
+    color: #8b9eb0;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
   }
 
   &__value {
-    font-size: 26px;
+    font-size: 30px;
     font-weight: 700;
-    color: $primary;
-    margin-bottom: 2px;
-
-    &--md { font-size: 20px; }
+    color: #1a2c3e;
+    margin-bottom: 4px;
+    
+    &--md {
+      font-size: 22px;
+    }
   }
 
   &__note {
-    font-size: 12px;
-    color: $gray;
+    font-size: 11px;
+    color: #a0b3c4;
+  }
+}
+
+
+.td-action {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+
+  button {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+
+      &.btn-edit { 
+        background: rgba($warning, 0.1);
+        color: $warning;
+        
+        &:hover {
+          background: $warning;
+          color: white;
+        } 
+      }
   }
 }

@@ -140,11 +140,11 @@ const TrainsManagement = () => {
 
   // ==================== COLUMNS DEFINITION ====================
   const columns = [
-    { title: 'Mã tàu', key: 'ma_tau', width: '80px' },
-    { title: 'Số hiệu', key: 'so_hieu', width: '100px' },
-    { title: 'Tên tàu', key: 'ten_tau', width: '200px' },
-    { title: 'Số toa', key: 'so_toa', width: '80px' },
-    { title: 'Số toa thực tế', key: 'so_toa_thuc_te', width: '100px' },
+    { title: 'Mã tàu', key: 'ma_tau', width: '90px' },
+    { title: 'Số hiệu', key: 'so_hieu', width: '90px' },
+    { title: 'Tên tàu', key: 'ten_tau', width: '240px' },
+    { title: 'Số toa', key: 'so_toa', width: '130px' },
+    { title: 'Số toa thực tế', key: 'so_toa_thuc_te', width: '140px' },
     { 
       title: 'Trạng thái', 
       key: 'trang_thai',

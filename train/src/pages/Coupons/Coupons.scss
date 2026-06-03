@@ -138,13 +138,14 @@
   // Action buttons
   .action-buttons {
     display: flex;
+    justify-content: left;
     gap: 8px;
     
     button {
       width: 32px;
       height: 32px;
       border-radius: 6px;
-      border: none;
+      border: none; 
       cursor: pointer;
       display: inline-flex;
       align-items: center;
